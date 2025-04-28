@@ -11,6 +11,10 @@ if __name__ == "__main__":
     api = StageAPI(serial_port="/dev/ttyUSB0", baudrate=115200)
     api.connect()
 
+    pos = api.get_position(device_id=21)
+    api.set_position(device_id=21, position=600)
+    api.set_position(device_id=21, position=100)
+
     info = api.get_info(device_id=21)
     info_all = api.get_info_all(
         device_ids=[

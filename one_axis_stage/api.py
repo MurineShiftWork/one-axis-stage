@@ -60,10 +60,11 @@ class StageAPI(StageSerialConnection):
         Get the position of a device.
         """
         self.send(command="p", data=device_id, order="!cH")
-        # read 2 bytes
-        raw_data = self.read_bytes(n_bytes=2, unpack_order="!HH")
-        # combine bytes to int
-        position = (raw_data[0] << 8) | raw_data[1]
+        # read 2 bytes & combine bytes to int
+        position = self.read_bytes(n_bytes=2, unpack_order="!H")
+        if isinstance(position, tuple):
+            position = position[0]
+
         logging.debug(f"Position: {position}")
         return position
 
