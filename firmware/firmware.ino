@@ -95,17 +95,55 @@ void loop()
                 scanForDevices();
                 break;
 
-            case 'i': // Get info one
-                // getInfoOne(int1);  // TODO
+            case 'i':
+                // Get info one
+                // Expecting at least one cmd char + one integer (2 bytes)
+                if (bufferIndex >= 3)
+                {
+                    uint16_t id = (buffer[1] << 8) | buffer[2]; // Combine two bytes to form integer
+                    String info = getInfoById(id);
+                    cmd.println(info);
+                }
+                else
+                {
+                    if (DEBUG_PRINT)
+                        Serial.println("Invalid command length for 'i'");
+                }
                 break;
 
-            case 'I': // Get info all
-                // getInfoAll();      // TODO
-                break;
+//             case 'I':
+//                 // Get info all
+//                 // for each id (input needs to be array), call get info one and append string
+//                 // solve like move-multiple: for each int in buffer, call getInfoById, then return list
+//
+//                 if (bufferIndex >= 3)
+//                 {
+//                     String info = "[";
+//
+//                     // for each device id
+//                     for (int i = 1; i < bufferIndex; i += 2)
+//                     {
+//                         uint16_t id = (buffer[i] << 8) | buffer[i + 1];           // Combine two bytes to form integer
+//                         info += getInfoById(id);
+//                         info += ",";
+//
+//                     }//end: IDs
+//
+//                     info += "]";
+//
+//                     cmd.println(info);
+//
+//                 }//end: I
+//                 else
+//                 {
+//                     if (DEBUG_PRINT)
+//                         Serial.println("Invalid command length for 'I'");
+//                 }
+//                 break;
 
             case 'p':
                 // Get position
-                // Expecting at least one character + one integer (2 bytes)
+                // Expecting at least one cmd char + one integer (2 bytes)
                 if (bufferIndex >= 3)
                 {
                     uint16_t id = (buffer[1] << 8) | buffer[2]; // Combine two bytes to form integer
@@ -127,7 +165,7 @@ void loop()
                     uint16_t id = (buffer[1] << 8) | buffer[2];       // Combine two bytes to form integer
                     uint16_t position = (buffer[3] << 8) | buffer[4]; // Combine two bytes to form integer
 
-                    moveDevice(id, position);
+                    setPosition(id, position);
 
 #if OUTPUT_TTL
                     digitalWrite(move_ttl_pin, HIGH);
@@ -168,7 +206,7 @@ void loop()
                         uint16_t id = (buffer[i] << 8) | buffer[i + 1];           // Combine two bytes to form integer
                         uint16_t position = (buffer[i + 2] << 8) | buffer[i + 3]; // Combine two bytes to form integer
 
-                        moveDevice(id, position);
+                        setPosition(id, position);
 
 #if DEBUG_PRINT
                         Serial.print("Moving device ID ");
@@ -225,38 +263,8 @@ void loop()
     } // while
 } // loop
 
-void moveDevice(uint16_t id, uint16_t position)
-{
-    // Check if ID is within valid range
-    if (id < 1 || id > MAX_ID)
-    {
-        if (DEBUG_PRINT)
-            Serial.println("Invalid ID");
-        return;
-    }
-
-    digitalWrite(move_ttl_pin, HIGH);
-
-    // Move the Dynamixel device
-    dxl.setGoalPosition(id, position);
-
-    if (DEBUG_PRINT)
-    {
-        Serial.print("Moving device ID ");
-        Serial.print(id);
-        Serial.print(" to position ");
-        Serial.println(position);
-    }
-}
-
-void getPosition(int id)
-{
-    int positionRaw = dxl.getPresentPosition(id, UNIT_RAW);
-    // cmd.println(positionRaw);
-    cmd.write((positionRaw >> 8) & 0xFF); // Send high byte
-    cmd.write(positionRaw & 0xFF);        // Send low byte
-}
-
+// ----------------------------------------------------------------------
+// GETTERS
 
 void scanForDevices() {
   cmd.println("DEBUG: Scanning for devices.");
@@ -295,4 +303,107 @@ void scanForDevices() {
   // return to state prior to looping baud rates, etc.
   dxl.begin(dxl_baudrate);
   dxl.setPortProtocolVersion(dxl_protocol_version);
+}//end:scanForDevices
+
+
+String quote_key_value_pair(String key, String value, bool add_trailing_comma)
+{
+String quotation = "\"";
+String entry = quotation + key + quotation + ":" + value;
+if (add_trailing_comma) {
+    entry += ", ";
+}
+return entry;
+}//end:quote_key_value_pair
+
+
+String getInfoById(int id) {
+  #if DEBUG_PRINT
+    cmd.print("DEBUG:getting info for ");
+    cmd.println(id);
+  #endif
+
+  // Prepare a String to store the information
+  String info = "{";
+
+  // id
+  info += quote_key_value_pair("id", String(id), true);
+//   info += "\"id\": " + String(id) + ", ";
+
+  // Fetch the model number
+  uint16_t modelNumber = dxl.getModelNumber(id);
+  info += quote_key_value_pair("model_number", String(modelNumber), true);
+//   info += "\"model_number\": " + String(modelNumber) + ", ";
+
+//  // Fetch the firmware version
+//  float firmwareVersion = dxl.getFirmwareVersion(id);
+//  info += "\"firmware_version\": " + String(firmwareVersion, 1) + ", ";
+
+  // Fetch the baud rate (if applicable)
+  uint32_t baudRate = dxl.readControlTableItem(BAUD_RATE, id);
+//   info += "\"baud_rate\": " + String(baudRate) + ", ";
+  info += quote_key_value_pair("baud_rate_int", String(baudRate), true);
+
+  // Fetch the present position in raw
+  int presentPositionRaw = dxl.getPresentPosition(id, UNIT_RAW);
+//   info += "\"position_raw\": " + String(presentPositionRaw) + ", ";
+  info += quote_key_value_pair("position_raw", String(presentPositionRaw), true);
+
+  // Fetch the present position in degrees
+  float presentPositionDeg = dxl.getPresentPosition(id, UNIT_DEGREE);
+//   info += "\"position_deg\": " + String(presentPositionDeg, 2) + ", ";
+  info += quote_key_value_pair("position_deg", String(presentPositionDeg), true);
+
+  // operating mode
+  uint8_t mode = dxl.readControlTableItem(OPERATING_MODE, id);
+//   info += "\"operating_mode\":" + String(mode) + ", ";
+  info += quote_key_value_pair("operating_mode_int", String(mode), true);
+
+  // Fetch the present velocity
+  int velocity_max = dxl.readControlTableItem(MOVING_SPEED, id); // Assume this method exists
+//   info += "\"velocity_max\": " + String(velocity_max) + ", ";
+  info += quote_key_value_pair("velocity_max", String(velocity_max), false);
+
+  // Close the dictionary-like string
+  info += "}";
+
+  return info;
+}//end:getInfoById
+
+
+void getPosition(int id)
+{
+    int positionRaw = dxl.getPresentPosition(id, UNIT_RAW);
+    // cmd.println(positionRaw);
+    cmd.write((positionRaw >> 8) & 0xFF); // Send high byte
+    cmd.write(positionRaw & 0xFF);        // Send low byte
+}//end:getPosition
+
+
+
+// ----------------------------------------------------------------------
+// SETTERS
+
+void setPosition(uint16_t id, uint16_t position)
+{
+    // Check if ID is within valid range
+    if (id < 1 || id > MAX_ID)
+    {
+        if (DEBUG_PRINT)
+            Serial.println("Invalid ID");
+        return;
+    }
+
+    digitalWrite(move_ttl_pin, HIGH);
+
+    // Move the Dynamixel device
+    dxl.setGoalPosition(id, position);
+
+    if (DEBUG_PRINT)
+    {
+        Serial.print("Moving device ID ");
+        Serial.print(id);
+        Serial.print(" to position ");
+        Serial.println(position);
+    }
 }

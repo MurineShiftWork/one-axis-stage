@@ -1,170 +1,13 @@
 import json
 import logging
-import struct
 import time
 from typing import Any
 
-from serial import Serial
-
-OP_MODE_LOOKUP_TO_STR = {
-    0: "OP_POSITION",
-    1: "OP_EXTENDED_POSITION",
-    2: "OP_CURRENT_BASED_POSITION",
-    3: "OP_VELOCITY",
-    4: "OP_PWM",
-    5: "OP_CURRENT",
-}
-# invert dict
-OP_MODE_LOOKUP = {v: k for k, v in OP_MODE_LOOKUP_TO_STR.items()}
+from one_axis_stage import BAUDRATE_LOOKUP, OP_MODE_LOOKUP, OP_MODE_LOOKUP_TO_STR
+from one_axis_stage.connection import StageSerialConnection
 
 
-class SerialConnection:
-    serial_port: str | None = None
-    baudrate: int | None = None
-    timeout: float = 1
-    connection: Serial | None = None
-
-    def __init__(
-        self,
-        serial_port: str | None = None,
-        baudrate: int | None = None,
-        timeout: float | None = None,
-        **kwargs: Any,
-    ) -> None:
-        self.serial_port = serial_port
-        self.baudrate = baudrate or 115200
-        self.timeout = timeout or 0.1
-
-    def dict(self) -> dict:
-        class_data = {
-            "serial_port": self.serial_port,
-            "baudrate": self.baudrate,
-            "timeout": self.timeout,
-        }
-        return class_data
-
-    def __repr__(self) -> str:
-        return (
-            f"SerialConnection(serial_port={self.serial_port}, "
-            f"baudrate={self.baudrate}, "
-            f"timeout={self.timeout})"
-        )
-
-    def __str__(self) -> str:
-        return (
-            f"SerialConnection: {self.serial_port} @ {self.baudrate} baud, "
-            f"timeout={self.timeout}"
-        )
-
-    @property
-    def connected(self) -> bool:
-        if self.connection is not None:
-            return self.connection.is_open
-        else:
-            return False
-
-    def connect(self) -> "SerialConnection":
-        if not self.connected:
-            self.connection = Serial(
-                port=self.serial_port,
-                baudrate=self.baudrate,
-                timeout=self.timeout,
-            )
-            # is open?
-            if self.connection.is_open:
-                logging.info(f"Connected to {self.serial_port} at {self.baudrate} baud.")
-            else:
-                logging.error(f"Failed to open serial port {self.serial_port}.")
-
-        return self
-
-    def disconnect(self) -> None:
-        if self.connection is not None:
-            self.connection.close()
-            self.connection = None
-            logging.info(f"Disconnected from {self.serial_port}.")
-
-    def _encode(self, data: Any, order: str) -> bytes:
-        """Encode & pack as byte struct & flank by start/stop bytes."""
-        # check that data is list
-        if not isinstance(data, list):
-            data = [data]
-
-        # encode str to bytes
-        data_encoded = [item.encode() if isinstance(item, str) else item for item in data]
-
-        # pack the data
-        data_packed = struct.pack(order, *data_encoded)
-
-        # flank the packed data with start/stop bytes </>
-        message = b"<" + data_packed + b">"
-
-        logging.debug(f"Encoded message: '{str(message)}'")
-        return message
-
-    def send(self, command: str, data: Any = None, order: str = None) -> None:
-        """"""
-        assert isinstance(command, str)
-        assert isinstance(data, (list, int, str, None))
-        assert isinstance(order, str)
-
-        # combine command and data
-        if data is not None:
-            if not isinstance(data, list):
-                data = [data]
-            raw_data = [command] + data
-        else:
-            raw_data = command
-
-        # encode/pack
-        data_to_send = self._encode(raw_data, order=order)
-
-        # send data
-        if self.connected:
-            self.connection.write(data_to_send)
-            self.connection.flush()
-            logging.debug(f"Sent data: {data_to_send}")
-
-    def read_bytes(self, n_bytes: int = None, unpack_order: str = None) -> tuple[Any, ...]:
-        """
-        Read n_bytes from the serial port and unpack them according to the
-        specified unpack_order.
-        The unpack_order should be a format string compatible with the
-        struct module.
-
-        Parameters
-        ----------
-        n_bytes : int
-        unpack_order : str
-
-        Returns
-        -------
-        tuple
-            Unpacked data as a tuple of values.
-
-        """
-        raw_data = self.connection.read(n_bytes)
-
-        # Check if the correct amount of data was read
-        if len(raw_data) != n_bytes:
-            raise ValueError(f"Did not receive {n_bytes} bytes from serial port")
-
-        # Unpack the data as separate variables
-        unpacked_bytes = struct.unpack(unpack_order, raw_data)
-
-        logging.debug(f"Unpacked bytes: {unpacked_bytes}")
-        return unpacked_bytes
-
-    def read_line(self) -> str:
-        """
-        Read a line from the serial port and decode it to a string.
-        """
-        line = self.connection.readline().decode("utf-8").strip()
-        logging.debug(f"Received line: {line}")
-        return line
-
-
-class StageAPI(SerialConnection):
+class StageAPI(StageSerialConnection):
     def __init__(self, serial_port: str, baudrate: int = 115200, timeout: float = 1) -> None:
         # init serial connection
         super().__init__(serial_port=serial_port, baudrate=baudrate, timeout=timeout)
@@ -185,17 +28,32 @@ class StageAPI(SerialConnection):
 
         return scan_result
 
-    def get_info_all(self, device_ids: list[int]) -> str:
-        """"""
-        self.send(command="I", data=device_ids, order="!HH")
-        info_json = self.read_line()
-        # to dict
-        info_dict = json.loads(info_json)
-        return info_dict
-
     def get_info(self, device_id: int) -> str:
         """"""
         self.send(command="i", data=device_id, order="!cH")
+        info_json = self.read_line()
+        # to dict
+        info_dict = json.loads(info_json)
+
+        # resolve baud_rate_int -> baud_rate, same for operating mode
+        info_dict["baud_rate"] = BAUDRATE_LOOKUP.get(info_dict["baud_rate_int"])
+        info_dict["operating_mode"] = self._op_mode_int_to_str(info_dict["operating_mode_int"])
+
+        return info_dict
+
+    def get_info_all(self, device_ids: list[Any]) -> str:
+        """"""
+        info_all = []
+        for device_id in device_ids:
+            info_all.append(self.get_info(device_id))
+
+        # data_order = "!c" + len(device_ids) * "H"
+        # self.send(command="I", data=device_ids, order=data_order)
+        # info_json = self.read_line()
+        # # to dict
+        # info_dict = json.loads(info_json)
+        # return info_dict
+        return info_all
 
     def get_position(self, device_id: int) -> int:
         """
@@ -275,11 +133,17 @@ class StageAPI(SerialConnection):
             order="!cHH",
         )
 
-    def _resolve_operating_mode_code(self, op_mode: str) -> int:
+    def _op_mode_str_to_int(self, op_mode: str) -> int:
         """
         Resolve the operating mode code from the mode string.
         """
         return OP_MODE_LOOKUP.get(op_mode)
+
+    def _op_mode_int_to_str(self, op_mode: int) -> str:
+        """
+        Resolve the operating mode code from the mode string.
+        """
+        return OP_MODE_LOOKUP_TO_STR.get(op_mode)
 
     def set_operating_mode(self, device_id: int, op_mode: str | int) -> None:
         """
@@ -289,7 +153,7 @@ class StageAPI(SerialConnection):
         assert op_mode is not None, f"Invalid operating mode: {op_mode}"
 
         if isinstance(op_mode, str):
-            op_mode = self._resolve_operating_mode_code(op_mode=op_mode)
+            op_mode = self._op_mode_str_to_int(op_mode=op_mode)
 
         self.send(
             command="o",
@@ -309,117 +173,3 @@ class StageAPI(SerialConnection):
             data=[device_id, duration_ms, repeats],
             order="!cHHH",
         )
-
-
-class StageAxis(StageAPI):
-    name: str
-    id: int
-
-    position_raw: int
-    position_min: int
-    position_max: int
-    velocity_max: int
-    operating_mode: str
-    controller: StageAPI
-
-    def __init__(
-        self,
-        name: str,
-        id: int,
-        position_min: int,
-        position_max: int,
-        velocity_max: int,
-        operating_mode: str,
-        controller: StageAPI,
-    ) -> None:
-        self.name = name
-        self.id = id
-        self.position_min = position_min
-        self.position_max = position_max
-        self.velocity_max = velocity_max
-        self.operating_mode = operating_mode
-        self.controller = controller
-
-        # set device mode
-        # self.set_operating_mode(device_id=self.id, op_mode=self.operating_mode)
-        # self.set_velocity(device_id=self.id, velocity=self.velocity_max)
-
-        # get attrs
-        # self.
-
-    def __repr__(self) -> str:
-        return f"StageAxis({self.name})"
-
-    def __str__(self) -> str:
-        return f"StageAxis: {self.name}"
-
-    def __dict__(self) -> dict:
-        return {
-            "name": self.name,
-            "id": self.id,
-            "position_raw": self.position_raw,
-            "position_min": self.position_min,
-            "position_max": self.position_max,
-            "velocity_max": self.velocity_max,
-            "operating_mode": self.operating_mode,
-        }
-
-    def get_info(self):
-        """
-        Get the information of the device.
-
-        Returns
-        -------
-        dict
-            Information of the device.
-
-        """
-        return self.controller.get_info(device_id=self.id)
-
-    def get_position(self):
-        """
-        Get the position of the device.
-        """
-        self.position_raw = self.controller.get_position(device_id=self.id)
-        logging.debug(f"Get position: {self.position_raw}")
-        return self.position_raw
-
-    def set_position(self, position: int) -> None:
-        """
-        Set the position of the device.
-        """
-        assert (
-            position >= self.position_min and position <= self.position_max
-        ), f"Invalid position: {position}"
-
-        self.controller.set_position(device_id=self.id, position=position)
-        self.position_raw = position
-        logging.debug(f"Set position: {position}")
-
-    def set_velocity(self, velocity: int) -> None:
-        """
-        Set the velocity of the device.
-        """
-        assert velocity >= 0 and velocity <= self.velocity_max, f"Invalid velocity: {velocity}"
-
-        self.controller.set_velocity(device_id=self.id, velocity=velocity)
-        logging.debug(f"Set velocity: {velocity}")
-
-    def set_operating_mode(self, op_mode: str | int) -> None:
-        """
-        Set the operating mode of the device.
-        """
-        assert op_mode is not None, f"Invalid operating mode: {op_mode}"
-
-        if isinstance(op_mode, str):
-            mode = self._resolve_operating_mode_code(op_mode=op_mode)
-
-        self.controller.set_operating_mode(device_id=self.id, op_mode=op_mode)
-        logging.debug(f"Set operating mode: {op_mode}")
-
-
-if __name__ == "__main__":
-    # Open the serial connection
-    api = StageAPI(serial_port="/dev/ttyUSB0", baudrate=115200)
-    api.connect()
-    api.scan_for_devices()
