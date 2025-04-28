@@ -15,6 +15,13 @@ if __name__ == "__main__":
     api.set_position(device_id=21, position=600)
     api.set_position(device_id=21, position=100)
 
+    # TODO: set position multiple
+    # TODO: set baudrate
+    # TODO: set new id
+    # TODO: set velocity
+    # TODO: set operating mode
+    # TODO: flash
+
     info = api.get_info(device_id=21)
     info_all = api.get_info_all(
         device_ids=[
