@@ -21,11 +21,15 @@ if __name__ == "__main__":
 
     # Load the configuration file
     config_file = os.path.join(script_path, "example_config.yaml")
+    config_file = "/home/murinemanager/.murineshiftwork/calibration.stage.setup1.yaml"
     with open(config_file) as f:
         config = yaml.safe_load(f)
 
     # Your controller logic goes here
     ctrl = StageController.from_config(config_file)
+
+    ctrl.move_to_known_position("back")
+
     move = MoveInterface(ctrl, small_increment=20, large_increment=40)
 
     print(ctrl)

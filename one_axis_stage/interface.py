@@ -81,6 +81,12 @@ class MoveInterface:
             logging.info(
                 f"Moving axis '{axis.name}' {axis.position_raw}->{new_position} ({increment})"
             )
-            axis.set_position(new_position)
+
+            # try to move, but ignore errors, only report
+            try:
+                axis.set_position(new_position)
+            except AssertionError as e:
+                logging.error(e)
+
         else:
             raise ValueError(f"Axis '{axis_name}' not found in controller")

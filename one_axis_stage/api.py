@@ -32,6 +32,7 @@ class StageAPI(StageSerialConnection):
         """"""
         self.send(command="i", data=device_id, order="!cH")
         info_json = self.read_line()
+
         # to dict
         info_dict = json.loads(info_json)
 
@@ -85,7 +86,7 @@ class StageAPI(StageSerialConnection):
         Set the position of multiple devices.
         """
         data = []
-        data_order = ""
+        data_order = "!c"
         for device_id, position in position_tuples:
             data.append(device_id)
             data.append(position)
@@ -95,7 +96,7 @@ class StageAPI(StageSerialConnection):
         logging.debug(f"Position tuples: {data}")
 
         # send
-        self.send(command="M", data=data, order="!c" + data_order)
+        self.send(command="M", data=data, order=data_order)
 
     def set_baudrate(self, device_id: int, current_baudrate: int, new_baudrate: int) -> None:
         """

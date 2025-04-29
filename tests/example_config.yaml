@@ -25,11 +25,17 @@ connection:
   serial_port: /dev/ttyUSB0
   timeout: 1
 known_positions:
+#  back:
+#    x: 301
+#    y: 599
+#    z: 296
+#  front:
+#    x: 301
+#    y: 299
+#    z: 296
   back:
-    x: 301
-    y: 599
-    z: 296
+    y:
+      position_raw: 800
   front:
-    x: 301
-    y: 299
-    z: 296
+    y:
+      position_raw: 350

@@ -11,11 +11,11 @@ if __name__ == "__main__":
     api = StageAPI(serial_port="/dev/ttyUSB0", baudrate=115200)
     api.connect()
 
-    pos = api.get_position(device_id=21)
-    api.set_position(device_id=21, position=600)
-    pos = api.get_position(device_id=21)
+    pos = api.get_position(device_id=11)
+    api.set_position(device_id=11, position=600)
+    pos = api.get_position(device_id=11)
     api.set_position(device_id=21, position=100)
-    pos = api.get_position(device_id=21)
+    pos = api.get_position(device_id=11)
 
     # TODO: set position multiple
     # TODO: set baudrate
@@ -26,10 +26,11 @@ if __name__ == "__main__":
 
     info = api.get_info(device_id=21)
     info_all = api.get_info_all(device_ids=[21, 55, 67])
+    info_all = api.get_info_all(device_ids=[11, 12, 13])
     api.scan_for_devices()
 
     api.flash(device_id=55, duration_ms=1000, repeats=5)
-    api.set_baudrate(1, 1000000, 115200)
+    api.set_baudrate(73, 1000000, 115200)
 
     api.set_velocity(device_id=21, velocity=0)
     # api.set_operating_mode(device_id=21, op_mode="OP_VELOCITY") # FIXME

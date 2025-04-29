@@ -19,14 +19,17 @@ class StageAxis:
         self,
         name: str,
         id: int,
+        # position_raw: int,
         position_min: int,
         position_max: int,
         velocity_max: int,
         operating_mode: str,
         api: StageAPI,
+        **kwargs,
     ) -> None:
         self.name = name
         self.id = id
+        # self.position_raw = position_raw
         self.position_min = position_min
         self.position_max = position_max
         self.velocity_max = velocity_max

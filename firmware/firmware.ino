@@ -216,12 +216,13 @@ void loop()
                         uint16_t position = bytes_to_int(buffer[i + 2], buffer[i + 3]);
                         setPosition(id, position);
 
-#if (DEBUG_PRINT)
-                        dxl_serial.print("Moving device ID ");
-                        dxl_serial.print(id);
-                        dxl_serial.print(" to position ");
-                        dxl_serial.println(position);
-#endif
+// #if (DEBUG_PRINT)
+//                         dxl_serial.print("Moving device ID ");
+//                         dxl_serial.print(id);
+//                         dxl_serial.print(" to position ");
+//                         dxl_serial.println(position);
+// #endif
+
                     }//end: tuples
                 }//end: M
                 else
@@ -476,18 +477,19 @@ void setPosition(uint16_t id, uint16_t position)
         return;
     }
 
-    digitalWrite(move_ttl_pin, HIGH);
+//     digitalWrite(move_ttl_pin, HIGH);
 
     // Move the Dynamixel device
     dxl.setGoalPosition(id, position);
 
-    if (DEBUG_PRINT)
-    {
-        dxl_serial.print("Moving device ID ");
-        dxl_serial.print(id);
-        dxl_serial.print(" to position ");
-        dxl_serial.println(position);
-    }
+//     if (DEBUG_PRINT)
+//     {
+//         dxl_serial.print("Moving device ID ");
+//         dxl_serial.print(id);
+//         dxl_serial.print(" to position ");
+//         dxl_serial.println(position);
+//     }
+
 }//end:setPosition
 
 

@@ -74,16 +74,24 @@ class StageController:
 
     # factory function to create a StageController instance from a configuration file
     @staticmethod
-    def from_config(config_file: str | Path) -> "StageController":
-        config_file = Path(config_file)
-        # check file exists
-        if not config_file.is_file():
-            raise FileNotFoundError(f"Config file not found: {config_file}")
+    def from_config(config_file: str | Path | dict) -> "StageController":
+        if isinstance(config_file, str):
+            config_file = Path(config_file)
 
-        config_file.open("r")
-        with config_file.open("r") as file:
-            # yaml full load
-            stage_config = yaml.full_load(file)
+        if isinstance(config_file, Path):
+            config_file = Path(config_file)
+            # check file exists
+            if not config_file.is_file():
+                raise FileNotFoundError(f"Config file not found: {config_file}")
+
+            config_file.open("r")
+            with config_file.open("r") as file:
+                # yaml full load
+                stage_config = yaml.full_load(file)
+        elif isinstance(config_file, dict):
+            stage_config = config_file
+        else:
+            raise TypeError(f"Config type {config_file} is not supported")
 
         ctrl = StageController(**stage_config["connection"])
         ctrl.config = stage_config
@@ -92,7 +100,7 @@ class StageController:
 
         return ctrl
 
-    def save_config(self, config_file: str | Path, overwrite: bool = False) -> bool:
+    def save_config(self, config_file: str | Path, overwrite: bool = True) -> bool:
         config_file = Path(config_file)
         # check file exists
         if config_file.exists() and not overwrite:
@@ -122,8 +130,10 @@ class StageController:
     def move_to_position(self, position: dict) -> None:
         # lookup axis by name and move to position
         position_by_axis_id = [
-            (self.axes[axis_name].id, position[axis_name]) for axis_name in position
+            (self.axes[axis_name].id, position[axis_name]["position_raw"])
+            for axis_name in position
         ]
+        # FIXME: should have to write position_raw here
         return self.api.set_position_multiple(position_tuples=position_by_axis_id)
 
     def move_to_known_position(self, position_name: str) -> None:
@@ -134,7 +144,7 @@ class StageController:
 
         return self.move_to_position(position)
 
-    def save_known_position(self, position_name: str) -> None:
+    def save_as_known_position(self, position_name: str) -> None:
         new_position = {}
         for axis_name in self.axes:
             # self.axes[axis_name].dict()

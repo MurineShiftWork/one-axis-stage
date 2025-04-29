@@ -8,11 +8,6 @@ except PackageNotFoundError:
     __version__ = "0.0.1"
 
 
-def run():
-    """Example `run` function for entrypoint defined in `pyproject.toml`."""
-    print("Hello, world!")
-
-
 OP_MODE_LOOKUP_TO_STR = {
     0: "OP_POSITION",
     1: "OP_EXTENDED_POSITION",

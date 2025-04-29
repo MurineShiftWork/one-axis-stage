@@ -46,7 +46,7 @@ dev = [
 ]
 
 [project.entry-points.console_scripts]
-one-axis-stage-entrypoint = "one_axis stage.__init__:run"
+#one-axis-stage-entrypoint = "one_axis stage.__init__:run"
 
 [tool.setuptools]
 zip-safe = false
