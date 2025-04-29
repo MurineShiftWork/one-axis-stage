@@ -37,6 +37,14 @@ void setup()
     digitalWrite(move_ttl_pin, LOW); // Set TTL pin low initially
 }
 
+uint16_t bytes_to_int(byte high, byte low)
+{
+    // Combine two bytes to form an integer
+    uint16_t new_int = (high << 8) | low;
+    return new_int;
+}//end:bytes_to_int
+
+
 void loop()
 {
     static byte startByte = '<';
@@ -100,7 +108,7 @@ void loop()
                 // Expecting at least one cmd char + one integer (2 bytes)
                 if (bufferIndex >= 3)
                 {
-                    uint16_t id = (buffer[1] << 8) | buffer[2]; // Combine two bytes to form integer
+                    uint16_t id = bytes_to_int(buffer[1], buffer[2]);
                     String info = getInfoById(id);
                     cmd.println(info);
                 }
@@ -146,7 +154,7 @@ void loop()
                 // Expecting at least one cmd char + one integer (2 bytes)
                 if (bufferIndex >= 3)
                 {
-                    uint16_t id = (buffer[1] << 8) | buffer[2]; // Combine two bytes to form integer
+                    uint16_t id = bytes_to_int(buffer[1], buffer[2]);
                     getPosition(id);
                 }
                 else
@@ -162,9 +170,8 @@ void loop()
                 {
                     // Unpack the message
                     // commandChar = buffer[0];
-                    uint16_t id = (buffer[1] << 8) | buffer[2];       // Combine two bytes to form integer
-                    uint16_t position = (buffer[3] << 8) | buffer[4]; // Combine two bytes to form integer
-
+                    uint16_t id = bytes_to_int(buffer[1], buffer[2]);
+                    uint16_t position = bytes_to_int(buffer[3], buffer[4]);
                     setPosition(id, position);
 
 #if OUTPUT_TTL
@@ -203,9 +210,8 @@ void loop()
                     // for each tuple of (device id, target position)
                     for (int i = 1; i < bufferIndex; i += 4)
                     {
-                        uint16_t id = (buffer[i] << 8) | buffer[i + 1];           // Combine two bytes to form integer
-                        uint16_t position = (buffer[i + 2] << 8) | buffer[i + 3]; // Combine two bytes to form integer
-
+                        uint16_t id = bytes_to_int(buffer[i], buffer[i + 1]);
+                        uint16_t position = bytes_to_int(buffer[i + 2], buffer[i + 3]);
                         setPosition(id, position);
 
 #if DEBUG_PRINT
