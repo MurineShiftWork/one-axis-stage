@@ -106,7 +106,7 @@ class StageAPI(StageSerialConnection):
         self.send(
             command="b",
             data=[device_id, current_baudrate, new_baudrate],
-            order="!cHHH",
+            order="!cHII",
         )
 
     def set_device_id(self, current_device_id: int, new_device_id: int) -> None:

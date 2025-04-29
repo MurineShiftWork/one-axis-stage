@@ -63,6 +63,9 @@ class StageSerialConnection:
             else:
                 logging.error(f"Failed to open serial port {self.serial_port}.")
 
+        # clear buffer
+        self.connection.read(self.connection.in_waiting)
+
         return self
 
     def disconnect(self) -> None:
@@ -89,6 +92,10 @@ class StageSerialConnection:
         logging.debug(f"Encoded message: '{str(message)}'")
         return message
 
+    def clear_buffer(self):
+        self.connection.read(self.connection.in_waiting)
+        return not self.connection.in_waiting
+
     def send(self, command: str, data: Any = None, order: str = None) -> None:
         """"""
         assert isinstance(command, str)
@@ -108,6 +115,7 @@ class StageSerialConnection:
 
         # send data
         if self.connected:
+            self.clear_buffer()
             self.connection.write(data_to_send)
             self.connection.flush()
             logging.debug(f"Sent data: {data_to_send}")

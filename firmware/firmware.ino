@@ -99,7 +99,7 @@ void loop()
             // GETTERS
             case 's': // Scan for devices
                 if (DEBUG_PRINT)
-                    Serial.println("about to scan for devices...");
+                    dxl_serial.println("about to scan for devices...");
 
                 scanForDevices();
                 break;
@@ -116,7 +116,7 @@ void loop()
                 else
                 {
                     if (DEBUG_PRINT)
-                        Serial.println("Invalid command length for 'i'");
+                        dxl_serial.println("Invalid command length for 'i'");
                 }
                 break;
 
@@ -140,13 +140,13 @@ void loop()
 //
 //                     info += "]";
 //
-//                     cmd.println(info);
+//                     dxl_serial.println(info);
 //
 //                 }//end: I
 //                 else
 //                 {
 //                     if (DEBUG_PRINT)
-//                         Serial.println("Invalid command length for 'I'");
+//                         dxl_serial.println("Invalid command length for 'I'");
 //                 }
 //                 break;
 
@@ -161,7 +161,7 @@ void loop()
                 else
                 {
                     if (DEBUG_PRINT)
-                        Serial.println("Invalid command length for 'p'");
+                        dxl_serial.println("Invalid command length for 'p'");
                 }
                 break;
 
@@ -176,7 +176,7 @@ void loop()
                     uint16_t position = bytes_to_int(buffer[3], buffer[4]);
                     setPosition(id, position);
 
-#if OUTPUT_TTL
+#if (OUTPUT_TTL)
                     digitalWrite(move_ttl_pin, HIGH);
                         // Wait for the move to complete or timeout
                         unsigned long startTime = millis();
@@ -197,7 +197,7 @@ void loop()
                 else
                 {
                     if (DEBUG_PRINT)
-                        Serial.println("Invalid command length for 'm'");
+                        dxl_serial.println("Invalid command length for 'm'");
                 }
                 break;
                 // todo: other commands:
@@ -216,49 +216,121 @@ void loop()
                         uint16_t position = bytes_to_int(buffer[i + 2], buffer[i + 3]);
                         setPosition(id, position);
 
-#if DEBUG_PRINT
-                        Serial.print("Moving device ID ");
-                        Serial.print(id);
-                        Serial.print(" to position ");
-                        Serial.println(position);
+#if (DEBUG_PRINT)
+                        dxl_serial.print("Moving device ID ");
+                        dxl_serial.print(id);
+                        dxl_serial.print(" to position ");
+                        dxl_serial.println(position);
 #endif
                     }//end: tuples
                 }//end: M
                 else
                 {
                     if (DEBUG_PRINT)
-                        Serial.println("Invalid command length for 'M'");
+                        dxl_serial.println("Invalid command length for 'M'");
                 }
                 break;
 
 
-            case 'b': // Set baudrate
-                // alignAllDevicesBaudrate(int1);
+            case 'b':
+                // Set baudrate
+                if (bufferIndex >= 9)
+                {
+                    uint16_t id = bytes_to_int(buffer[1], buffer[2]);
+//                     uint32_t currentBaudrate = bytes_to_int(buffer[3], buffer[4]);
+//                     uint32_t newBaudrate = bytes_to_int(buffer[5], buffer[6]);
+
+                    uint32_t currentBaudrate = (
+                        (uint32_t)buffer[3] << 24 |
+                        (uint32_t)buffer[4] << 16 |
+                        (uint32_t)buffer[5] << 8 |
+                        (uint32_t)buffer[6]
+                    );
+                    uint32_t newBaudrate = (
+                        (uint32_t)buffer[7] << 24 |
+                        (uint32_t)buffer[8] << 16 |
+                        (uint32_t)buffer[9] << 8 |
+                        (uint32_t)buffer[10]
+                    );
+
+                    cmd.print("currentBaudrate: ");
+                    cmd.println(String(currentBaudrate));
+                    cmd.print("newBaudrate: ");
+                    cmd.println(String(newBaudrate));
+
+                    setBaudrate(id, currentBaudrate, newBaudrate);
+                }
+                else
+                {
+                    if (DEBUG_PRINT)
+                        dxl_serial.println("Invalid command length for 'b'");
+                }
                 break;
 
-            case 'd': // Set ID
-                // setDeviceId(int1, int2);
+            case 'd':
+                // Set ID
+                if (bufferIndex >= 3)
+                {
+                    uint16_t id = bytes_to_int(buffer[1], buffer[2]);
+                    uint16_t newId = bytes_to_int(buffer[3], buffer[4]);
+                    setDeviceId(id, newId);
+                }
+                else
+                {
+                    if (DEBUG_PRINT)
+                        dxl_serial.println("Invalid command length for 'd'");
+                }
                 break;
 
-            case 'v': // Set velocity
-                // setMaxVelocity(int1, int2);
+            case 'v':
+                // Set velocity
+                if (bufferIndex >= 3)
+                {
+                    uint16_t id = bytes_to_int(buffer[1], buffer[2]);
+                    uint16_t velocity = bytes_to_int(buffer[3], buffer[4]);
+                    setMaxVelocity(id, velocity);
+                }
+                else
+                {
+                    if (DEBUG_PRINT)
+                        dxl_serial.println("Invalid command length for 'v'");
+                }
                 break;
 
-            case 'o': // Set mode
-                // setDeviceMode(int1, int2);
+            case 'o':
+                // Set operating mode
+                if (bufferIndex >= 3)
+                {
+                    uint16_t id = bytes_to_int(buffer[1], buffer[2]);
+                    uint16_t mode = bytes_to_int(buffer[3], buffer[4]);
+                    setOperatingMode(id, mode);
+                }
+                else
+                {
+                    if (DEBUG_PRINT)
+                        dxl_serial.println("Invalid command length for 'o'");
+                }
                 break;
 
             case 'f':
                 // Flash device
-                uint16_t id = bytes_to_int(buffer[1], buffer[2]);
-                uint16_t duration = bytes_to_int(buffer[3], buffer[4]);
-                uint16_t repeats = bytes_to_int(buffer[5], buffer[6]);
-                flashDevice(id, duration, repeats);
+                if (bufferIndex >= 5)
+                {
+                    uint16_t id = bytes_to_int(buffer[1], buffer[2]);
+                    uint16_t duration = bytes_to_int(buffer[3], buffer[4]);
+                    uint16_t repeats = bytes_to_int(buffer[5], buffer[6]);
+                    flashDevice(id, duration, repeats);
+                }
+                else
+                {
+                    if (DEBUG_PRINT)
+                        dxl_serial.println("Invalid command length for 'p'");
+                }
                 break;
 
             default:
                 if (DEBUG_PRINT)
-                    Serial.println("Invalid command");
+                    dxl_serial.println("Invalid command");
                 break;
             }
         } // EVAL
@@ -279,7 +351,7 @@ void loop()
 // GETTERS
 
 void scanForDevices() {
-  cmd.println("DEBUG: Scanning for devices.");
+  dxl_serial.println("DEBUG: Scanning for devices.");
 
   int8_t found_dynamixel = 0;
 
@@ -331,8 +403,8 @@ return entry;
 
 String getInfoById(int id) {
   #if DEBUG_PRINT
-    cmd.print("DEBUG:getting info for ");
-    cmd.println(id);
+    dxl_serial.print("DEBUG:getting info for ");
+    dxl_serial.println(id);
   #endif
 
   // Prepare a String to store the information
@@ -340,45 +412,43 @@ String getInfoById(int id) {
 
   // id
   info += quote_key_value_pair("id", String(id), true);
-//   info += "\"id\": " + String(id) + ", ";
 
   // Fetch the model number
   uint16_t modelNumber = dxl.getModelNumber(id);
   info += quote_key_value_pair("model_number", String(modelNumber), true);
-//   info += "\"model_number\": " + String(modelNumber) + ", ";
 
 //  // Fetch the firmware version
-//  float firmwareVersion = dxl.getFirmwareVersion(id);
-//  info += "\"firmware_version\": " + String(firmwareVersion, 1) + ", ";
+//  float firmwareVersion = dxl.readControlTableItem(FIRMWARE_VERSION, id);
+//  info += quote_key_value_pair("baud_rate_int", String(firmwareVersion, 2), true);
 
   // Fetch the baud rate (if applicable)
   uint32_t baudRate = dxl.readControlTableItem(BAUD_RATE, id);
-//   info += "\"baud_rate\": " + String(baudRate) + ", ";
   info += quote_key_value_pair("baud_rate_int", String(baudRate), true);
 
   // Fetch the present position in raw
   int presentPositionRaw = dxl.getPresentPosition(id, UNIT_RAW);
-//   info += "\"position_raw\": " + String(presentPositionRaw) + ", ";
   info += quote_key_value_pair("position_raw", String(presentPositionRaw), true);
 
   // Fetch the present position in degrees
   float presentPositionDeg = dxl.getPresentPosition(id, UNIT_DEGREE);
-//   info += "\"position_deg\": " + String(presentPositionDeg, 2) + ", ";
   info += quote_key_value_pair("position_deg", String(presentPositionDeg), true);
 
   // operating mode
   uint8_t mode = dxl.readControlTableItem(OPERATING_MODE, id);
-//   info += "\"operating_mode\":" + String(mode) + ", ";
   info += quote_key_value_pair("operating_mode_int", String(mode), true);
 
   // Fetch the present velocity
-  int velocity_max = dxl.readControlTableItem(MOVING_SPEED, id); // Assume this method exists
-//   info += "\"velocity_max\": " + String(velocity_max) + ", ";
+  int velocity_max = dxl.readControlTableItem(MOVING_SPEED, id);
   info += quote_key_value_pair("velocity_max", String(velocity_max), false);
 
   // Close the dictionary-like string
   info += "}";
 
+#if (DEBUG_PRINT)
+    {
+    dxl_serial.println(info);
+    }
+#endif
   return info;
 }//end:getInfoById
 
@@ -386,7 +456,7 @@ String getInfoById(int id) {
 void getPosition(int id)
 {
     int positionRaw = dxl.getPresentPosition(id, UNIT_RAW);
-    // cmd.println(positionRaw);
+    // dxl_serial.println(positionRaw);
     cmd.write((positionRaw >> 8) & 0xFF); // Send high byte
     cmd.write(positionRaw & 0xFF);        // Send low byte
 }//end:getPosition
@@ -402,7 +472,7 @@ void setPosition(uint16_t id, uint16_t position)
     if (id < 1 || id > MAX_ID)
     {
         if (DEBUG_PRINT)
-            Serial.println("Invalid ID");
+            dxl_serial.println("Invalid ID");
         return;
     }
 
@@ -413,10 +483,10 @@ void setPosition(uint16_t id, uint16_t position)
 
     if (DEBUG_PRINT)
     {
-        Serial.print("Moving device ID ");
-        Serial.print(id);
-        Serial.print(" to position ");
-        Serial.println(position);
+        dxl_serial.print("Moving device ID ");
+        dxl_serial.print(id);
+        dxl_serial.print(" to position ");
+        dxl_serial.println(position);
     }
 }//end:setPosition
 
@@ -427,18 +497,18 @@ void setDeviceId(uint16_t id, uint16_t newId)
     dxl.setID(id, newId);
     if (DEBUG_PRINT)
     {
-        Serial.print("Setting device ID ");
-        Serial.print(id);
-        Serial.print(" to new ID ");
-        Serial.println(newId);
+        dxl_serial.print("Setting device ID ");
+        dxl_serial.print(id);
+        dxl_serial.print(" to new ID ");
+        dxl_serial.println(newId);
     }
 } // end:setDeviceId
 
 
-void setMaxVelocity(int id, int velocity)
+void setMaxVelocity(int id, uint16_t velocity)
 {
 #if DEBUG_PRINT
-  cmd.println("DEBUG:setting-max-v");
+  dxl_serial.println("DEBUG:setting-max-v");
 #endif
 
   dxl.torqueOff(id);
@@ -446,49 +516,49 @@ void setMaxVelocity(int id, int velocity)
   if (dxl.writeControlTableItem(MOVING_SPEED, id, velocity))
   {
 #if DEBUG_PRINT
-    cmd.print("Successfully set max velocity to ");
-    cmd.print(velocity);
-    cmd.print(" for ID: ");
-    cmd.println(id);
+    dxl_serial.print("Successfully set max velocity to ");
+    dxl_serial.print(velocity);
+    dxl_serial.print(" for ID: ");
+    dxl_serial.println(id);
 #endif
   }
   else
   {
 #if DEBUG_PRINT
-    cmd.print("Failed to set max velocity for ID: ");
-    cmd.println(id);
+    dxl_serial.print("Failed to set max velocity for ID: ");
+    dxl_serial.println(id);
 #endif
   }
   dxl.torqueOn(id);
 }//end:setMaxVelocity
 
 
-void setDeviceMode(int id, int mode)
+void setOperatingMode(int id, uint16_t mode)
 {
-// OP_VELOCITY, OP_POSITION
-#if DEBUG_PRINT
-  cmd.println("DEBUG:setting-mode");
-#endif
-
   // Set the operating mode to OP_POSITION for the given device ID
   dxl.torqueOff(id);
 
   if (dxl.setOperatingMode(id, mode))
+//   if (dxl.writeControlTableItem(OPERATING_MODE, id, mode))
   { // OPERATING_MODE
-#if DEBUG_PRINT
-    cmd.print("Successfully set mode ");
-    cmd.print(mode);
-    cmd.print(" for ID: ");
-    cmd.println(id);
+#if (DEBUG_PRINT)
+    {
+    dxl_serial.print("Successfully set mode ");
+    dxl_serial.print(mode);
+    dxl_serial.print(" for ID: ");
+    dxl_serial.println(id);
+    }
 #endif
   }
   else
   {
-#if DEBUG_PRINT
-    cmd.print("Failed to set mode ");
-    cmd.print(mode);
-    cmd.print(" for ID: ");
-    cmd.println(id);
+#if (DEBUG_PRINT)
+    {
+    dxl_serial.print("Failed to set mode ");
+    dxl_serial.print(mode);
+    dxl_serial.print(" for ID: ");
+    dxl_serial.println(id);
+    }
 #endif
   }
 
@@ -496,17 +566,36 @@ void setDeviceMode(int id, int mode)
 }//end:setDeviceMode
 
 
-void setBaudrate(int id, int baudrate)
+void setBaudrate(uint16_t id, uint32_t currentBaudrate, uint32_t newBaudrate)
 {
     // Set the baudrate for the device
-    dxl.setBaudRate(id, baudrate);
-    if (DEBUG_PRINT)
+    dxl.begin(currentBaudrate);
+
+    if (dxl.ping(id))
     {
-        Serial.print("Setting device ID ");
-        Serial.print(id);
-        Serial.print(" to new baudrate ");
-        Serial.println(baudrate);
+        dxl.torqueOff(id);
+        dxl.setBaudrate(id, newBaudrate);
+        dxl.torqueOn(id);
+
+            cmd.print("Setting device ID ");
+            cmd.print(id);
+            cmd.print(" to new baudrate ");
+            cmd.println(String(newBaudrate));
+
+    }//ping/set
+    else
+    {
+
+            cmd.print("Failed setting device ID ");
+            cmd.print(id);
+            cmd.print(" to new baudrate ");
+            cmd.println(String(newBaudrate));
+
     }
+
+    // return to standard rate
+    dxl.begin(dxl_baudrate);
+
 }// end:setBaudrate
 
 

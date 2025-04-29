@@ -13,7 +13,9 @@ if __name__ == "__main__":
 
     pos = api.get_position(device_id=21)
     api.set_position(device_id=21, position=600)
+    pos = api.get_position(device_id=21)
     api.set_position(device_id=21, position=100)
+    pos = api.get_position(device_id=21)
 
     # TODO: set position multiple
     # TODO: set baudrate
@@ -29,6 +31,11 @@ if __name__ == "__main__":
         ]
     )
     api.scan_for_devices()
+
+    api.flash(device_id=21, duration_ms=1000, repeats=5)
+    api.set_baudrate(1, 1000000, 115200)
+
+    # api.set_operating_mode(device_id=21, op_mode="OP_VELOCITY") # FIXME
 
     print("EXIT")
 
