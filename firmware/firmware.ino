@@ -95,6 +95,7 @@ void loop()
             //  get info all                 list of IDs            -> str: list of dicts for info on each device
             //  scan all                                            -> str: list of dicts for info on each device
             {
+            // --------------------------------------------------------------------------------
             // GETTERS
             case 's': // Scan for devices
                 if (DEBUG_PRINT)
@@ -164,6 +165,7 @@ void loop()
                 }
                 break;
 
+            // --------------------------------------------------------------------------------
             // SETTERS
             case 'm':                 // Move device
                 if (bufferIndex >= 5) // Expecting at least one character + two integers (2 bytes each) -> 5 bytes
@@ -246,8 +248,12 @@ void loop()
                 // setDeviceMode(int1, int2);
                 break;
 
-            case 'f': // Flash device
-                // flashDevice(int1, int2, int3);  // (id, duration, repeats)
+            case 'f':
+                // Flash device
+                uint16_t id = bytes_to_int(buffer[1], buffer[2]);
+                uint16_t duration = bytes_to_int(buffer[3], buffer[4]);
+                uint16_t repeats = bytes_to_int(buffer[5], buffer[6]);
+                flashDevice(id, duration, repeats);
                 break;
 
             default:
@@ -412,4 +418,107 @@ void setPosition(uint16_t id, uint16_t position)
         Serial.print(" to position ");
         Serial.println(position);
     }
-}
+}//end:setPosition
+
+
+void setDeviceId(uint16_t id, uint16_t newId)
+{
+    // Set the new ID for the device
+    dxl.setID(id, newId);
+    if (DEBUG_PRINT)
+    {
+        Serial.print("Setting device ID ");
+        Serial.print(id);
+        Serial.print(" to new ID ");
+        Serial.println(newId);
+    }
+} // end:setDeviceId
+
+
+void setMaxVelocity(int id, int velocity)
+{
+#if DEBUG_PRINT
+  cmd.println("DEBUG:setting-max-v");
+#endif
+
+  dxl.torqueOff(id);
+  // Set the maximum velocity for the given device ID
+  if (dxl.writeControlTableItem(MOVING_SPEED, id, velocity))
+  {
+#if DEBUG_PRINT
+    cmd.print("Successfully set max velocity to ");
+    cmd.print(velocity);
+    cmd.print(" for ID: ");
+    cmd.println(id);
+#endif
+  }
+  else
+  {
+#if DEBUG_PRINT
+    cmd.print("Failed to set max velocity for ID: ");
+    cmd.println(id);
+#endif
+  }
+  dxl.torqueOn(id);
+}//end:setMaxVelocity
+
+
+void setDeviceMode(int id, int mode)
+{
+// OP_VELOCITY, OP_POSITION
+#if DEBUG_PRINT
+  cmd.println("DEBUG:setting-mode");
+#endif
+
+  // Set the operating mode to OP_POSITION for the given device ID
+  dxl.torqueOff(id);
+
+  if (dxl.setOperatingMode(id, mode))
+  { // OPERATING_MODE
+#if DEBUG_PRINT
+    cmd.print("Successfully set mode ");
+    cmd.print(mode);
+    cmd.print(" for ID: ");
+    cmd.println(id);
+#endif
+  }
+  else
+  {
+#if DEBUG_PRINT
+    cmd.print("Failed to set mode ");
+    cmd.print(mode);
+    cmd.print(" for ID: ");
+    cmd.println(id);
+#endif
+  }
+
+  dxl.torqueOn(id);
+}//end:setDeviceMode
+
+
+void setBaudrate(int id, int baudrate)
+{
+    // Set the baudrate for the device
+    dxl.setBaudRate(id, baudrate);
+    if (DEBUG_PRINT)
+    {
+        Serial.print("Setting device ID ");
+        Serial.print(id);
+        Serial.print(" to new baudrate ");
+        Serial.println(baudrate);
+    }
+}// end:setBaudrate
+
+
+void flashDevice(uint16_t id, uint16_t duration, uint16_t repeats)
+{
+    // Flash the device by toggling the move_ttl_pin
+    for (uint16_t i = 0; i < repeats; i++)
+    {
+        dxl.ledOn(id);
+        delay(duration);
+
+        dxl.ledOff(id);
+        delay(duration);
+    }
+} // end:flashDevice
