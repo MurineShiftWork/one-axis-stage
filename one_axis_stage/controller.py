@@ -92,14 +92,16 @@ class StageController:
 
         return ctrl
 
-    def save_config(self, config_file: str | Path) -> None:
+    def save_config(self, config_file: str | Path, overwrite: bool = False) -> bool:
         config_file = Path(config_file)
         # check file exists
-        if not config_file.is_file():
-            raise FileNotFoundError(f"Config file not found: {config_file}")
+        if config_file.exists() and not overwrite:
+            raise FileExistsError(f"Config file already exists: {config_file}")
 
         with config_file.open("w") as file:
             yaml.dump(self.config, file)
+
+        return config_file.exists()
 
     def add_axis(self, axis_name: str, **axis_config) -> None:
         if "name" in axis_config:
@@ -108,13 +110,14 @@ class StageController:
         if axis_name in self.axes:
             raise ValueError(f"Axis already exists: {axis_name}")
 
-        self.axes[axis_name] = StageAxis(controller=self, name=axis_name, **axis_config)
+        self.axes[axis_name] = StageAxis(api=self.api, name=axis_name, **axis_config)
+        self.axes[axis_name].get_info()
 
         return self.axes[axis_name]
 
     def ping_axes(self) -> None:
         for axis in self.axes.values():
-            axis.sync_attrs_from_stage()
+            axis.get_info()
 
     def move_to_position(self, position: dict) -> None:
         # lookup axis by name and move to position
@@ -134,7 +137,8 @@ class StageController:
     def save_known_position(self, position_name: str) -> None:
         new_position = {}
         for axis_name in self.axes:
-            self.axes[axis_name].dict()
+            # self.axes[axis_name].dict()
+            self.axes[axis_name].get_info()
             new_position[axis_name] = self.axes[axis_name].__dict__()["position_raw"]
 
         self.known_positions[position_name] = new_position

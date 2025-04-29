@@ -92,7 +92,7 @@ class StageSerialConnection:
         logging.debug(f"Encoded message: '{str(message)}'")
         return message
 
-    def clear_buffer(self):
+    def _clear_buffer(self):
         self.connection.read(self.connection.in_waiting)
         return not self.connection.in_waiting
 
@@ -115,7 +115,7 @@ class StageSerialConnection:
 
         # send data
         if self.connected:
-            self.clear_buffer()
+            self._clear_buffer()
             self.connection.write(data_to_send)
             self.connection.flush()
             logging.debug(f"Sent data: {data_to_send}")

@@ -25,17 +25,16 @@ if __name__ == "__main__":
     # TODO: flash
 
     info = api.get_info(device_id=21)
-    info_all = api.get_info_all(
-        device_ids=[
-            21,
-        ]
-    )
+    info_all = api.get_info_all(device_ids=[21, 55, 67])
     api.scan_for_devices()
 
-    api.flash(device_id=21, duration_ms=1000, repeats=5)
+    api.flash(device_id=55, duration_ms=1000, repeats=5)
     api.set_baudrate(1, 1000000, 115200)
 
+    api.set_velocity(device_id=21, velocity=0)
     # api.set_operating_mode(device_id=21, op_mode="OP_VELOCITY") # FIXME
+
+    api.set_device_id(current_device_id=1, new_device_id=67)
 
     print("EXIT")
 

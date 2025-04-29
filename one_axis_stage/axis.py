@@ -3,16 +3,17 @@ import logging
 from one_axis_stage.api import StageAPI
 
 
-class StageAxis(StageAPI):
+class StageAxis:
     name: str
     id: int
 
-    position_raw: int
-    position_min: int
-    position_max: int
-    velocity_max: int
-    operating_mode: str
-    controller: StageAPI
+    position_raw: int = -1
+    position_min: int = -1
+    position_max: int = -1
+    position_max: int = -1
+    velocity_max: int = 0
+    operating_mode: str = "OP_POSITION"
+    api: StageAPI
 
     def __init__(
         self,
@@ -22,7 +23,7 @@ class StageAxis(StageAPI):
         position_max: int,
         velocity_max: int,
         operating_mode: str,
-        controller: StageAPI,
+        api: StageAPI,
     ) -> None:
         self.name = name
         self.id = id
@@ -30,7 +31,7 @@ class StageAxis(StageAPI):
         self.position_max = position_max
         self.velocity_max = velocity_max
         self.operating_mode = operating_mode
-        self.controller = controller
+        self.api = api
 
         # set device mode
         # self.set_operating_mode(device_id=self.id, op_mode=self.operating_mode)
@@ -66,13 +67,21 @@ class StageAxis(StageAPI):
             Information of the device.
 
         """
-        return self.controller.get_info(device_id=self.id)
+        info = self.api.get_info(device_id=self.id)
+
+        # update Axis attributes
+        self.position_raw = info["position_raw"]
+        # self.position_deg = info["position_deg"]
+        self.velocity_max = info["velocity_max"]
+        self.operating_mode = info["operating_mode"]
+
+        return info
 
     def get_position(self):
         """
         Get the position of the device.
         """
-        self.position_raw = self.controller.get_position(device_id=self.id)
+        self.position_raw = self.api.get_position(device_id=self.id)
         logging.debug(f"Get position: {self.position_raw}")
         return self.position_raw
 
@@ -84,7 +93,7 @@ class StageAxis(StageAPI):
             position >= self.position_min and position <= self.position_max
         ), f"Invalid position: {position}"
 
-        self.controller.set_position(device_id=self.id, position=position)
+        self.api.set_position(device_id=self.id, position=position)
         self.position_raw = position
         logging.debug(f"Set position: {position}")
 
@@ -94,7 +103,7 @@ class StageAxis(StageAPI):
         """
         assert velocity >= 0 and velocity <= self.velocity_max, f"Invalid velocity: {velocity}"
 
-        self.controller.set_velocity(device_id=self.id, velocity=velocity)
+        self.api.set_velocity(device_id=self.id, velocity=velocity)
         logging.debug(f"Set velocity: {velocity}")
 
     def set_operating_mode(self, op_mode: str | int) -> None:
@@ -106,5 +115,5 @@ class StageAxis(StageAPI):
         if isinstance(op_mode, str):
             mode = self._op_mode_str_to_int(op_mode=op_mode)
 
-        self.controller.set_operating_mode(device_id=self.id, op_mode=op_mode)
+        self.api.set_operating_mode(device_id=self.id, op_mode=op_mode)
         logging.debug(f"Set operating mode: {op_mode}")

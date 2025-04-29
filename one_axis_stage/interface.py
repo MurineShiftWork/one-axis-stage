@@ -81,6 +81,6 @@ class MoveInterface:
             logging.info(
                 f"Moving axis '{axis.name}' {axis.position_raw}->{new_position} ({increment})"
             )
-            axis.move_to_position(new_position)
+            axis.set_position(new_position)
         else:
             raise ValueError(f"Axis '{axis_name}' not found in controller")

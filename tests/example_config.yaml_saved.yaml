@@ -5,6 +5,7 @@ axes:
     operating_mode: OP_POSITION
     position_max: 800
     position_min: 200
+    position_raw: 299
     velocity_max: 0
   y:
     id: 55
@@ -12,6 +13,7 @@ axes:
     operating_mode: OP_POSITION
     position_max: 800
     position_min: 200
+    position_raw: 374
     velocity_max: 0
   z:
     id: 67
@@ -19,6 +21,7 @@ axes:
     operating_mode: OP_POSITION
     position_max: 800
     position_min: 200
+    position_raw: 298
     velocity_max: 0
 connection:
   baudrate: 115200
@@ -26,10 +29,10 @@ connection:
   timeout: 1
 known_positions:
   back:
-    x: 301
-    y: 599
-    z: 296
+    x: 299
+    y: 374
+    z: 298
   front:
-    x: 301
-    y: 299
-    z: 296
+    x: 299
+    y: 536
+    z: 298

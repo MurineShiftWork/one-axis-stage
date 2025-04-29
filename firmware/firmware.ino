@@ -502,6 +502,7 @@ void setDeviceId(uint16_t id, uint16_t newId)
         dxl_serial.print(" to new ID ");
         dxl_serial.println(newId);
     }
+    dxl.begin(dxl_serial);//FIXME: does this fix the lacking update after id change ?
 } // end:setDeviceId
 
 
