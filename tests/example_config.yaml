@@ -1,0 +1,41 @@
+axes:
+  x:
+    id: 21
+    name: x
+    operating_mode: OP_POSITION
+    position_max: 800
+    position_min: 200
+    velocity_max: 0
+  y:
+    id: 55
+    name: y
+    operating_mode: OP_POSITION
+    position_max: 800
+    position_min: 200
+    velocity_max: 0
+  z:
+    id: 67
+    name: z
+    operating_mode: OP_POSITION
+    position_max: 800
+    position_min: 200
+    velocity_max: 0
+connection:
+  baudrate: 115200
+  serial_port: /dev/ttyUSB0
+  timeout: 1
+known_positions:
+#  back:
+#    x: 301
+#    y: 599
+#    z: 296
+#  front:
+#    x: 301
+#    y: 299
+#    z: 296
+  back:
+    y:
+      position_raw: 800
+  front:
+    y:
+      position_raw: 350

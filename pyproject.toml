@@ -42,10 +42,11 @@ dev = [
     "pre-commit",
     "flake8",
     "toml",
+    "types-PyYAML",
 ]
 
 [project.entry-points.console_scripts]
-one-axis-stage-entrypoint = "one_axis stage.__init__:run"
+#one-axis-stage-entrypoint = "one_axis stage.__init__:run"
 
 [tool.setuptools]
 zip-safe = false
@@ -61,7 +62,7 @@ where = [""]
 addopts = "--cov=one_axis stage --cov-report=term-missing --maxfail=5"
 
 [tool.ruff]
-line-length = 88
+line-length = 99
 indent-width = 4
 include = ["*.pyi"]
 extend-exclude = ["*.eggs", "*.git", "*.hg", "*.mypy_cache", "*.tox", "*.venv", "*_build", "*buck-out", "*build", "*dist"]
