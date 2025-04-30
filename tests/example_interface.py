@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     for _ in range(5):
         time.sleep(0.5)
-        move.move_axis_by_increment("x", -1)
+        move.move_axis_by_increment("y", -1)
 
     move.move_axis_by_increment("y", -1)
 

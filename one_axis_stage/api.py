@@ -85,6 +85,8 @@ class StageAPI(StageSerialConnection):
         """
         Set the position of multiple devices.
         """
+        logging.debug(f"Moving to position: {position_tuples}")
+
         data = []
         data_order = "!c"
         for device_id, position in position_tuples:

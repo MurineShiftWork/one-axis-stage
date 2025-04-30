@@ -1,3 +1,4 @@
+import logging
 import time
 from pathlib import Path
 
@@ -119,7 +120,8 @@ class StageController:
             raise ValueError(f"Axis already exists: {axis_name}")
 
         self.axes[axis_name] = StageAxis(api=self.api, name=axis_name, **axis_config)
-        self.axes[axis_name].get_info()
+        info = self.axes[axis_name].get_info()
+        logging.debug(f"Controller: Added new axis {axis_name} ({info})")
 
         return self.axes[axis_name]
 
@@ -128,12 +130,27 @@ class StageController:
             axis.get_info()
 
     def move_to_position(self, position: dict) -> None:
+        logging.debug(f"Controller: Move to position: {position}")
+
         # lookup axis by name and move to position
-        position_by_axis_id = [
-            (self.axes[axis_name].id, position[axis_name]["position_raw"])
-            for axis_name in position
-        ]
-        # FIXME: should have to write position_raw here
+        position_by_axis_id = []
+        for axis_name in position:
+            axis_id = self.axes[axis_name].id
+            axis_target = position[axis_name]
+            logging.debug(f"Controller: Move to axis: {axis_id} -> {axis_target}")
+            if "position_raw" in axis_target:
+                axis_target_position = axis_target["position_raw"]
+            else:
+                axis_target_position = axis_target
+
+            position_by_axis_id.append((axis_id, axis_target_position))
+
+        # position_by_axis_id = [
+        #     (self.axes[axis_name].id, position[axis_name]["position_raw"])
+        #     for axis_name in position
+        # ]
+        # # FIXME: should have to write position_raw here
+
         return self.api.set_position_multiple(position_tuples=position_by_axis_id)
 
     def move_to_known_position(self, position_name: str) -> None:
@@ -149,9 +166,10 @@ class StageController:
         for axis_name in self.axes:
             # self.axes[axis_name].dict()
             self.axes[axis_name].get_info()
-            new_position[axis_name] = self.axes[axis_name].__dict__()["position_raw"]
+            new_position[axis_name] = self.axes[axis_name].__dict__()
 
         self.known_positions[position_name] = new_position
+        logging.debug(f"Controller: Save as known position: {new_position}")
 
     def remove_known_position(self, position_name: str) -> None:
         self.known_positions.pop(position_name)
