@@ -2,6 +2,16 @@ __author__ = "Lars B. Rollik"
 
 from importlib.metadata import PackageNotFoundError, version
 
+from one_axis_stage.axis import StageAxis
+from one_axis_stage.controller import StageController
+from one_axis_stage.interface import MoveInterface
+
+__all__ = [
+    "StageAxis",
+    "StageController",
+    "MoveInterface",
+]
+
 try:
     __version__ = version("subject_weight_db")
 except PackageNotFoundError:

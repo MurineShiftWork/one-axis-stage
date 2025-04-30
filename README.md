@@ -54,9 +54,9 @@ Hardware design and software for modular, low-cost one-axis stages
 | USB to TTL adapter            | LN-101 or MIKROE-3063 | 1          | 14 / 13             |                  | https://emanual.robotis.com/docs/en/parts/interface/ln-101 / https://www.mikroe.com/usb-uart-3-click |
 | USB-B to other USB (computer) |                       | 1          |                     |                  |                                                                                                      |
 | Linear slide 26mm range       | BSP1035SL             | 2+         | 26                  |                  | https://uk.rs-online.com/web/p/linear-slides/0749301                                                 |
-|                               |                       |            |                     |                  |                                                                                                      |
+| M2.5/M4 screws                |                       |            |                     |                  |                                                                                                      |
 
-##### 3D-printed parts
+##### CAD parts
 
 | Part | Count |
 |------|-------|
@@ -75,7 +75,19 @@ Hardware design and software for modular, low-cost one-axis stages
 ```python
 from one_axis_stage import StageController
 
+ctrl = StageController(serial_port="/dev/ttyUSB0")
+
+
 ```
+
+## TODO
+- [ ] Update README: parts lists (screws, etc.), build instructions, usage hardware/software
+- [ ] Add CAD design files
+- [ ] Fix `position_raw` issue in MoveInterface->Controller->API argument hand-down
+- [ ] Add Python tests
+- [ ] Fix linting errors
+- [ ] Add PyPI key to repo
+- [ ] Update version before release
 
 
 ## Contributing
