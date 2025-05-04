@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     # Load the configuration file
     config_file = os.path.join(script_path, "example_config.yaml")
-    config_file = "/home/murinemanager/.murineshiftwork/calibration.stage.setup1.yaml"
+    config_file = "/home/murinemanager/.murineshiftwork/calibration.stage.setup2.yaml"
     with open(config_file) as f:
         config = yaml.safe_load(f)
 
@@ -30,17 +30,27 @@ if __name__ == "__main__":
 
     ctrl.move_to_known_position("back")
 
+    ctrl.axes["y"].set_position(500)
+    time.sleep(1)
+    ctrl.save_as_known_position("front")
+
+    ctrl.move_to_known_position("back")
+
+    ctrl.move_to_known_position("front")
+
+    ctrl.axes["y"].set_position(800)
+
     move = MoveInterface(ctrl, small_increment=20, large_increment=40)
 
     print(ctrl)
 
-    move.move_axis_by_increment("x")
+    move.move_axis_by_increment("x", -1)
 
     for _ in range(5):
         time.sleep(0.5)
         move.move_axis_by_increment("y", -1)
 
-    move.move_axis_by_increment("y", -1)
+    move.move_axis_by_increment("y", 1)
 
     # ctrl.small_in
 
