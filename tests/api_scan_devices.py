@@ -8,7 +8,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
 
     # Open the serial connection
-    api = StageAPI(serial_port="/dev/ttyUSB0", baudrate=115200)
+    api = StageAPI(serial_port="/dev/ttyUSB3", baudrate=115200)
     api.connect()
 
     pos = api.get_position(device_id=11)

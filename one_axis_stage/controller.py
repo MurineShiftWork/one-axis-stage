@@ -39,6 +39,7 @@ class StageController:
     @property
     def config(self) -> dict:
         return {
+            "stage_id": self.api.stage_id,
             "connection": {
                 "serial_port": self.serial_port,
                 "baudrate": self.baudrate,
@@ -72,6 +73,7 @@ class StageController:
             timeout=self.timeout,
         )
         self.api.connect()
+        self.api.get_stage_id()
 
     # factory function to create a StageController instance from a configuration file
     @staticmethod
@@ -140,6 +142,7 @@ class StageController:
             logging.debug(f"Controller: Move to axis: {axis_id} -> {axis_target}")
             if "position_raw" in axis_target:
                 axis_target_position = axis_target["position_raw"]
+                logging.debug(f"removing key position_raw from target {axis_target}")
             else:
                 axis_target_position = axis_target
 
@@ -166,7 +169,8 @@ class StageController:
         for axis_name in self.axes:
             # self.axes[axis_name].dict()
             self.axes[axis_name].get_info()
-            new_position[axis_name] = self.axes[axis_name].__dict__()
+            axis_dict = self.axes[axis_name].__dict__()
+            new_position[axis_name] = {"position_raw": axis_dict["position_raw"]}
 
         self.known_positions[position_name] = new_position
         logging.debug(f"Controller: Save as known position: {new_position}")

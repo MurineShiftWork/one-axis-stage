@@ -8,11 +8,23 @@ from one_axis_stage.connection import StageSerialConnection
 
 
 class StageAPI(StageSerialConnection):
+    stage_id: int = 0
+
     def __init__(self, serial_port: str, baudrate: int = 115200, timeout: float = 1) -> None:
         # init serial connection
         super().__init__(serial_port=serial_port, baudrate=baudrate, timeout=timeout)
 
     # --- GETTERS ---
+
+    def get_stage_id(self) -> int:
+        self.send(command="e", order="c")
+        info_json = self.read_line()
+
+        # to dict
+        stage_id_dict = json.loads(info_json)
+        stage_id = stage_id_dict["stage_id"]
+        self.stage_id = stage_id
+        return stage_id
 
     def scan_for_devices(self):
         self.send(command="s", order="c")
