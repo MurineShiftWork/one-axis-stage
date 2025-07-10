@@ -29,6 +29,7 @@ if __name__ == "__main__":
     ctrl = StageController.from_config(config_file)
 
     ctrl.move_to_known_position("back")
+    ctrl.move_to_known_position("center")
 
     ctrl.axes["y"].set_position(500)
     time.sleep(1)

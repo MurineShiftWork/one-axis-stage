@@ -39,6 +39,7 @@ class StageController:
     @property
     def config(self) -> dict:
         return {
+            "stage_id": self.api.stage_id,
             "connection": {
                 "serial_port": self.serial_port,
                 "baudrate": self.baudrate,
@@ -72,6 +73,7 @@ class StageController:
             timeout=self.timeout,
         )
         self.api.connect()
+        self.api.get_stage_id()
 
     # factory function to create a StageController instance from a configuration file
     @staticmethod
