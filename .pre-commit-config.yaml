@@ -18,3 +18,16 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: ["types-toml"]
+  - repo: local
+    hooks:
+      - id: fix-commit-msg
+        name: Auto-fix commit message formatting
+        language: system
+        entry: python3 .githooks/fix_commit_msg.py
+        stages: [commit-msg]
+
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
+        stages: [commit-msg]
