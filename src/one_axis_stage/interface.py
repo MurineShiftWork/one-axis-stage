@@ -75,7 +75,9 @@ class MoveInterface:
     ):
         axis = self.controller.axes.get(axis_name)
         if axis:
-            increment_speed = self.small_increment if not fast_mode else self.large_increment
+            increment_speed = (
+                self.small_increment if not fast_mode else self.large_increment
+            )
             increment = increment_speed if direction_forward else -increment_speed
             new_position = axis.position_raw + increment
             logging.info(

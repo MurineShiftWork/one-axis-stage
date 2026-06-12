@@ -10,7 +10,9 @@ from one_axis_stage.connection import StageSerialConnection
 class StageAPI(StageSerialConnection):
     stage_id: int = 0
 
-    def __init__(self, serial_port: str, baudrate: int = 115200, timeout: float = 1) -> None:
+    def __init__(
+        self, serial_port: str, baudrate: int = 115200, timeout: float = 1
+    ) -> None:
         # init serial connection
         super().__init__(serial_port=serial_port, baudrate=baudrate, timeout=timeout)
 
@@ -50,7 +52,9 @@ class StageAPI(StageSerialConnection):
 
         # resolve baud_rate_int -> baud_rate, same for operating mode
         info_dict["baud_rate"] = BAUDRATE_LOOKUP.get(info_dict["baud_rate_int"])
-        info_dict["operating_mode"] = self._op_mode_int_to_str(info_dict["operating_mode_int"])
+        info_dict["operating_mode"] = self._op_mode_int_to_str(
+            info_dict["operating_mode_int"]
+        )
 
         return info_dict
 
@@ -112,7 +116,9 @@ class StageAPI(StageSerialConnection):
         # send
         self.send(command="M", data=data, order=data_order)
 
-    def set_baudrate(self, device_id: int, current_baudrate: int, new_baudrate: int) -> None:
+    def set_baudrate(
+        self, device_id: int, current_baudrate: int, new_baudrate: int
+    ) -> None:
         """
         Set the baudrate of a device.
         """

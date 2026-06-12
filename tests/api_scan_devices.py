@@ -8,9 +8,9 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
 
     # Open the serial connection
-    api = StageAPI(serial_port="/dev/ttyUSB3", baudrate=115200)
+    api = StageAPI(serial_port="/dev/ttyUSB1", baudrate=115200)
     api.connect()
-
+    api.set_baudrate(62, 1000000, 115200)
     pos = api.get_position(device_id=11)
     api.set_position(device_id=11, position=600)
     pos = api.get_position(device_id=11)
@@ -29,8 +29,10 @@ if __name__ == "__main__":
     info_all = api.get_info_all(device_ids=[11, 12, 13])
     api.scan_for_devices()
 
-    api.flash(device_id=55, duration_ms=1000, repeats=5)
-    api.set_baudrate(73, 1000000, 115200)
+    api.flash(device_id=63, duration_ms=1000, repeats=5)
+    api.set_baudrate(62, 1000000, 115200)
+
+    api.set_device_id(22, 42)
 
     api.set_velocity(device_id=21, velocity=0)
     # api.set_operating_mode(device_id=21, op_mode="OP_VELOCITY") # FIXME

@@ -1,0 +1,21 @@
+site_name: one-axis-stage
+site_description: Hardware design and software for modular, low-cost one-axis stages
+site_url: https://murineshiftwork.github.io/one-axis-stage/
+site_author: Lars B. Rollik
+repo_url: https://github.com/murineshiftwork/one-axis-stage
+repo_name: one-axis-stage
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: teal
+    accent: teal
+  features:
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+
+nav:
+  - Home: index.md

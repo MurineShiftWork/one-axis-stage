@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "one-axis-stage: Hardware design and software for modular, low-cost one-axis stages"
+version: "0.0.1"
+repository-code: https://github.com/murineshiftwork/one-axis-stage
+license-url: https://github.com/murineshiftwork/one-axis-stage/blob/main/LICENSE
+authors:
+  - family-names: Rollik
+    given-names: Lars B.
+    orcid: https://orcid.org/0000-0003-0160-6971
+
+# Zenodo integration (optional):
+# 1. Enable the Zenodo webhook at zenodo.org/account/settings/github
+# 2. After first tag release, copy the concept DOI from Zenodo and add:
+#
+# identifiers:
+#   - type: doi
+#     value: 10.5281/zenodo.XXXXXXX
+#     description: Zenodo concept DOI (resolves to latest version)

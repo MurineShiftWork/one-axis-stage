@@ -3,7 +3,7 @@ __author__ = "Lars B. Rollik"
 from importlib.metadata import PackageNotFoundError, version
 
 try:
-    __version__ = version("subject_weight_db")
+    __version__ = version("one-axis-stage")
 except PackageNotFoundError:
     __version__ = "0.0.1"
 
