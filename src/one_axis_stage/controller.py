@@ -45,7 +45,9 @@ class StageController:
                 "baudrate": self.baudrate,
                 "timeout": self.timeout,
             },
-            "axes": {axis_name: axis.__dict__() for axis_name, axis in self.axes.items()},
+            "axes": {
+                axis_name: axis.__dict__() for axis_name, axis in self.axes.items()
+            },
             "known_positions": self.known_positions,
         }
 
