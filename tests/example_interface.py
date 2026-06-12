@@ -11,7 +11,9 @@ if __name__ == "__main__":
     # Set up logging
     logging.basicConfig(level=logging.DEBUG)
     # format
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     # set on handler
     for handler in logging.getLogger().handlers:
         handler.setFormatter(formatter)
@@ -70,7 +72,9 @@ if __name__ == "__main__":
     # move all axes in increments along the above position to the one below
     inc = 20
     for i in range(10):
-        ctrl.move_to_position({"x": 300 + i * inc, "y": 300 + i * inc, "z": 250 + i * inc})
+        ctrl.move_to_position(
+            {"x": 300 + i * inc, "y": 300 + i * inc, "z": 250 + i * inc}
+        )
         time.sleep(2)
 
     ctrl.save_known_position("home")
