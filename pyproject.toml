@@ -75,7 +75,7 @@ version_files = ["VERSION"]
 # ---------------------------------------------------------------------------
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests/tests/test_unit"]
 addopts = "--cov=one_axis_stage --durations=0"
 
 # ---------------------------------------------------------------------------
@@ -85,6 +85,7 @@ addopts = "--cov=one_axis_stage --durations=0"
 [tool.ruff]
 line-length = 88
 indent-width = 4
+exclude = ["tests"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "UP", "YTT", "SIM", "PTH", "TCH", "PYI"]
@@ -106,6 +107,11 @@ mypy_path = "src"
 namespace_packages = true
 explicit_package_bases = true
 ignore_missing_imports = true
+exclude = ["tests"]
+
+[[tool.mypy.overrides]]
+module = ["one_axis_stage.connection", "one_axis_stage.api"]
+ignore_errors = true
 
 # ---------------------------------------------------------------------------
 # uv

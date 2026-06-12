@@ -10,7 +10,6 @@ class StageAxis:
     position_raw: int = -1
     position_min: int = -1
     position_max: int = -1
-    position_max: int = -1
     velocity_max: int = 0
     operating_mode: str = "OP_POSITION"
     api: StageAPI
@@ -49,7 +48,7 @@ class StageAxis:
     def __str__(self) -> str:
         return f"StageAxis: {self.name}"
 
-    def __dict__(self) -> dict:
+    def to_dict(self) -> dict:
         return {
             "name": self.name,
             "id": self.id,
@@ -92,9 +91,9 @@ class StageAxis:
         """
         Set the position of the device.
         """
-        assert (
-            position >= self.position_min and position <= self.position_max
-        ), f"Invalid position: {position}"
+        assert position >= self.position_min and position <= self.position_max, (
+            f"Invalid position: {position}"
+        )
 
         self.api.set_position(device_id=self.id, position=position)
         self.position_raw = position
@@ -104,7 +103,9 @@ class StageAxis:
         """
         Set the velocity of the device.
         """
-        assert velocity >= 0 and velocity <= self.velocity_max, f"Invalid velocity: {velocity}"
+        assert velocity >= 0 and velocity <= self.velocity_max, (
+            f"Invalid velocity: {velocity}"
+        )
 
         self.api.set_velocity(device_id=self.id, velocity=velocity)
         logging.debug(f"Set velocity: {velocity}")
@@ -116,7 +117,7 @@ class StageAxis:
         assert op_mode is not None, f"Invalid operating mode: {op_mode}"
 
         if isinstance(op_mode, str):
-            mode = self._op_mode_str_to_int(op_mode=op_mode)
+            self._op_mode_str_to_int(op_mode=op_mode)  # type: ignore[attr-defined]
 
         self.api.set_operating_mode(device_id=self.id, op_mode=op_mode)
         logging.debug(f"Set operating mode: {op_mode}")

@@ -59,7 +59,9 @@ class StageSerialConnection:
             )
             # is open?
             if self.connection.is_open:
-                logging.info(f"Connected to {self.serial_port} at {self.baudrate} baud.")
+                logging.info(
+                    f"Connected to {self.serial_port} at {self.baudrate} baud."
+                )
             else:
                 logging.error(f"Failed to open serial port {self.serial_port}.")
 
@@ -81,7 +83,9 @@ class StageSerialConnection:
             data = [data]
 
         # encode str to bytes
-        data_encoded = [item.encode() if isinstance(item, str) else item for item in data]
+        data_encoded = [
+            item.encode() if isinstance(item, str) else item for item in data
+        ]
 
         # pack the data
         data_packed = struct.pack(order, *data_encoded)
@@ -99,7 +103,7 @@ class StageSerialConnection:
     def send(self, command: str, data: Any = None, order: str = None) -> None:
         """"""
         assert isinstance(command, str)
-        assert isinstance(data, (list, int, str, type(None)))
+        assert isinstance(data, list | int | str | type(None))
         assert isinstance(order, str)
 
         # combine command and data
@@ -120,7 +124,9 @@ class StageSerialConnection:
             self.connection.flush()
             logging.debug(f"Sent data: {data_to_send}")
 
-    def read_bytes(self, n_bytes: int = None, unpack_order: str = None) -> tuple[Any, ...]:
+    def read_bytes(
+        self, n_bytes: int = None, unpack_order: str = None
+    ) -> tuple[Any, ...]:
         """
         Read n_bytes from the serial port and unpack them according to the
         specified unpack_order.
