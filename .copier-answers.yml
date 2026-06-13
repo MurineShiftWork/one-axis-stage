@@ -1,10 +1,12 @@
 # Changes here will be overwritten by Copier
-_commit: v0.5.0
-_src_path: gh:larsrollik/templatepy
+_commit: b17bd06
+_src_path: /home/tars/code/project_templates/templatepy
 author_email: lars@rollik.me
 author_name: Lars B. Rollik
 github_repo: one-axis-stage
 github_username: murineshiftwork
+license_type: bsd3
+private_repo_deps: false
 project_description: Hardware design and software for modular, low-cost one-axis stages
 project_name: one-axis-stage
 project_slug: one_axis_stage
