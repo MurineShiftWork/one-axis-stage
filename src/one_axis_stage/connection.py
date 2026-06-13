@@ -1,3 +1,5 @@
+"""Low-level serial connection to the stage controller firmware."""
+
 import logging
 import struct
 from typing import Any
@@ -6,6 +8,12 @@ from serial import Serial
 
 
 class StageSerialConnection:
+    """Manages an RS-232/USB serial link to a stage controller.
+
+    Handles framing (start/stop bytes), struct encoding, and raw I/O.
+    Not intended to be used directly - use StageAPI instead.
+    """
+
     serial_port: str | None = None
     baudrate: int | None = None
     timeout: float = 1
@@ -23,6 +31,7 @@ class StageSerialConnection:
         self.timeout = timeout or 0.1
 
     def dict(self) -> dict:
+        """Return connection parameters as a dictionary."""
         class_data = {
             "serial_port": self.serial_port,
             "baudrate": self.baudrate,
@@ -45,12 +54,14 @@ class StageSerialConnection:
 
     @property
     def connected(self) -> bool:
+        """True if the serial port is currently open."""
         if self.connection is not None:
             return self.connection.is_open
         else:
             return False
 
     def connect(self) -> "StageSerialConnection":
+        """Open the serial port and flush any stale data in the buffer."""
         if not self.connected:
             self.connection = Serial(
                 port=self.serial_port,
@@ -71,13 +82,14 @@ class StageSerialConnection:
         return self
 
     def disconnect(self) -> None:
+        """Close the serial port."""
         if self.connection is not None:
             self.connection.close()
             self.connection = None
             logging.info(f"Disconnected from {self.serial_port}.")
 
     def _encode(self, data: Any, order: str) -> bytes:
-        """Encode & pack as byte struct & flank by start/stop bytes."""
+        """Pack data as a framed byte struct flanked by start/stop bytes (`<`/`>`)."""
         # check that data is list
         if not isinstance(data, list):
             data = [data]
@@ -97,11 +109,12 @@ class StageSerialConnection:
         return message
 
     def _clear_buffer(self):
+        """Discard any unread bytes waiting in the receive buffer."""
         self.connection.read(self.connection.in_waiting)
         return not self.connection.in_waiting
 
     def send(self, command: str, data: Any = None, order: str = None) -> None:
-        """"""
+        """Encode and transmit a command packet over the serial link."""
         assert isinstance(command, str)
         assert isinstance(data, list | int | str | type(None))
         assert isinstance(order, str)
@@ -127,22 +140,17 @@ class StageSerialConnection:
     def read_bytes(
         self, n_bytes: int = None, unpack_order: str = None
     ) -> tuple[Any, ...]:
-        """
-        Read n_bytes from the serial port and unpack them according to the
-        specified unpack_order.
-        The unpack_order should be a format string compatible with the
-        struct module.
+        """Read and unpack a fixed number of bytes from the serial port.
 
-        Parameters
-        ----------
-        n_bytes : int
-        unpack_order : str
+        Args:
+            n_bytes: Number of bytes to read.
+            unpack_order: `struct` format string used to unpack the raw bytes.
 
-        Returns
-        -------
-        tuple
-            Unpacked data as a tuple of values.
+        Returns:
+            Tuple of unpacked values.
 
+        Raises:
+            ValueError: If fewer than `n_bytes` bytes are received.
         """
         raw_data = self.connection.read(n_bytes)
 
@@ -157,9 +165,7 @@ class StageSerialConnection:
         return unpacked_bytes
 
     def read_line(self) -> str:
-        """
-        Read a line from the serial port and decode it to a string.
-        """
+        """Read one newline-terminated line from the serial port and return it as a string."""
         line = self.connection.readline().decode("utf-8").strip()
         logging.debug(f"Received line: {line}")
         return line

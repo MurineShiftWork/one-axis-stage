@@ -1,3 +1,5 @@
+"""Convenience interface for incremental axis moves."""
+
 import logging
 from functools import partial
 
@@ -5,7 +7,22 @@ from one_axis_stage.controller import StageController
 
 
 class MoveInterface:
-    """"""
+    """Attaches per-axis increment helpers to a StageController.
+
+    For each axis registered on the controller, four bound methods are
+    created dynamically at construction time:
+
+    - ``<axis>p``  - move forward by small_increment
+    - ``<axis>m``  - move backward by small_increment
+    - ``<axis>pp`` - move forward by large_increment
+    - ``<axis>mm`` - move backward by large_increment
+
+    Example:
+        With axes ``x`` and ``y`` registered, the following are available::
+
+            move.xp()   # small step forward on x
+            move.ymm()  # large step backward on y
+    """
 
     controller: StageController
     small_increment: int
@@ -73,6 +90,19 @@ class MoveInterface:
         direction_forward: bool = True,
         fast_mode: bool = False,
     ):
+        """Move a named axis by one increment step.
+
+        Uses small_increment when fast_mode is False, large_increment otherwise.
+        Out-of-bounds moves are silently swallowed and logged as errors.
+
+        Args:
+            axis_name: Name of the axis to move.
+            direction_forward: True to increase position, False to decrease.
+            fast_mode: If True, use large_increment instead of small_increment.
+
+        Raises:
+            ValueError: If axis_name is not registered on the controller.
+        """
         axis = self.controller.axes.get(axis_name)
         if axis:
             increment_speed = (

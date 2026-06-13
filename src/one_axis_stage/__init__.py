@@ -1,3 +1,5 @@
+"""one-axis-stage: hardware control library for modular, low-cost one-axis stages."""
+
 __author__ = "Lars B. Rollik"
 
 from importlib.metadata import PackageNotFoundError, version
