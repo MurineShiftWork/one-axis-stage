@@ -23,7 +23,6 @@ if __name__ == "__main__":
 
     # Load the configuration file
     config_file = os.path.join(script_path, "example_config.yaml")
-    config_file = "/home/murinemanager/.murineshiftwork/calibration.stage.setup2.yaml"
     with open(config_file) as f:
         config = yaml.safe_load(f)
 
