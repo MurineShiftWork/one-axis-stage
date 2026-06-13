@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://murineshiftwork.github.io/one-axis-stage/api/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../usage/">
       
       
       
@@ -260,6 +260,60 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -379,6 +433,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#one_axis_stage.api.StageAPI.get_stage_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_stage_id
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.api.StageAPI.scan_for_devices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scan_for_devices
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#one_axis_stage.api.StageAPI.set_baudrate" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -458,6 +534,122 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="StageController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.add_axis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        add_axis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.from_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.move_to_known_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        move_to_known_position
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.move_to_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        move_to_position
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.ping_axes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ping_axes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.remove_known_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        remove_known_position
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.save_as_known_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        save_as_known_position
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.controller.StageController.save_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        save_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -480,23 +672,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="get_info">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#one_axis_stage.axis.StageAxis.get_info--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Returns
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -544,6 +719,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.axis.StageAxis.to_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_dict
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -557,6 +743,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="MoveInterface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one_axis_stage.interface.MoveInterface.move_axis_by_increment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        move_axis_by_increment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -608,6 +811,11 @@
 
 
 
+        <p>Direct command interface to the stage controller firmware.</p>
+<p>Wraps StageSerialConnection with typed commands for device discovery,
+position control, velocity, operating mode, and LED feedback.
+Each method corresponds to one firmware command.</p>
+
 
 
 
@@ -640,7 +848,70 @@
 
     <div class="doc doc-contents ">
 
-        <p>Flash the LED of a device.</p>
+        <p>Trigger the LED on a device for visual identification.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>device_id</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target device ID.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>duration_ms</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>On-time of each flash in milliseconds.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>repeats</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of times to flash.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -658,6 +929,39 @@
 
     <div class="doc doc-contents ">
 
+        <p>Return a status dict for a single device, with baud rate and operating mode resolved to human-readable strings.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>device_id</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dynamixel device ID on the serial bus.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
 
     </div>
 
@@ -673,6 +977,8 @@
 
 
     <div class="doc doc-contents ">
+
+        <p>Return a list of status dicts, one per device ID.</p>
 
 
     </div>
@@ -690,7 +996,44 @@
 
     <div class="doc doc-contents ">
 
-        <p>Get the position of a device.</p>
+        <p>Return the current raw position of a device.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.api.StageAPI.get_stage_id" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_stage_id</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Query and cache the controller's stage ID.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.api.StageAPI.scan_for_devices" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">scan_for_devices</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Broadcast a scan and return a newline-separated list of discovered device IDs.</p>
+<p>Blocks for up to ~4 seconds while the controller enumerates devices on the bus.</p>
 
 
     </div>
@@ -708,7 +1051,70 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set the baudrate of a device.</p>
+        <p>Change the baud rate stored on a device.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>device_id</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target device ID.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>current_baudrate</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Active baud rate used for this transaction.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>new_baudrate</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Baud rate to persist on the device.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -726,7 +1132,54 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set the device ID of a device.</p>
+        <p>Reassign the Dynamixel ID stored on a device.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>current_device_id</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Existing device ID used to address the device.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>new_device_id</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Replacement ID to persist on the device.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -747,6 +1200,53 @@
         <p>Set the operating mode of a device.</p>
 
 
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>device_id</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target device ID.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>op_mode</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mode name (e.g. <code>"OP_POSITION"</code>) or integer code.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
     </div>
 
 </div>
@@ -762,7 +1262,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set the position of a device.</p>
+        <p>Command a device to move to an absolute raw position.</p>
 
 
     </div>
@@ -780,7 +1280,38 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set the position of multiple devices.</p>
+        <p>Command multiple devices to move simultaneously.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>position_tuples</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of (device_id, position) pairs sent in a single packet.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -798,7 +1329,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set the velocity of a device.</p>
+        <p>Set the velocity limit for a device (0-254).</p>
 
 
     </div>
@@ -828,6 +1359,11 @@
 
 
 
+        <p>Coordinates one or more StageAxis instances over a shared serial connection.</p>
+<p>Provides named-position storage, multi-axis simultaneous moves, and
+YAML-based configuration save/load.  The recommended entry point is
+<code>from_config</code> rather than direct construction.</p>
+
 
 
 
@@ -846,8 +1382,568 @@
 
 
 
+<div class="doc doc-object doc-attribute">
 
 
+
+<h3 id="one_axis_stage.controller.StageController.config" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">config</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Current controller state as a serialisable dictionary.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.add_axis" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">add_axis</span><span class="p">(</span><span class="n">axis_name</span><span class="p">,</span> <span class="o">**</span><span class="n">axis_config</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Register a new axis on the controller and query its initial state.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>axis_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Logical name used to address the axis (e.g. <code>"x"</code>).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**axis_config</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Keyword arguments forwarded to StageAxis (id, position_min, position_max, velocity_max, operating_mode).</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="one_axis_stage.axis.StageAxis" href="#one_axis_stage.axis.StageAxis">StageAxis</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The newly created StageAxis instance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If an axis with the same name already exists.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.connect" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">connect</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Open the serial connection and query the stage ID.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.from_config" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Construct a StageController from a YAML config file or a pre-loaded dict.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>config_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="pathlib.Path">Path</span> | <span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to a YAML configuration file, or a dict with the same structure.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="one_axis_stage.controller.StageController" href="#one_axis_stage.controller.StageController">StageController</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A connected StageController with axes initialised.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a path is given but the file does not exist.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="TypeError">TypeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If config_file is not a str, Path, or dict.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.move_to_known_position" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">move_to_known_position</span><span class="p">(</span><span class="n">position_name</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Move to a previously saved named position.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>position_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Key used when the position was saved with <code>save_as_known_position</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the position name is not found in <code>known_positions</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.move_to_position" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">move_to_position</span><span class="p">(</span><span class="n">position</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Move one or more axes to target raw positions in a single command.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>position</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mapping of axis name to target position. Value may be an
+integer raw position or a dict with a <code>"position_raw"</code> key.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <p><code>ctrl.move_to_position({"x": 300, "y": 500})</code></p>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.ping_axes" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ping_axes</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Refresh device info for all registered axes.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.remove_known_position" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">remove_known_position</span><span class="p">(</span><span class="n">position_name</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Delete a named position from the known positions registry.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.save_as_known_position" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">save_as_known_position</span><span class="p">(</span><span class="n">position_name</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Query all axes and store their current positions under a named key.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>position_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Label for the saved position.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.controller.StageController.save_config" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">save_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Write the current controller configuration to a YAML file.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>config_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Destination path.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>overwrite</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If False, raise FileExistsError when the file already exists.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True if the file was written successfully.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 
 
@@ -871,6 +1967,10 @@
     <div class="doc doc-contents first">
 
 
+
+        <p>Represents one motor axis with configurable position limits and velocity cap.</p>
+<p>Wraps StageAPI calls for a specific device ID and enforces min/max position
+bounds on every move command before sending it to the controller.</p>
 
 
 
@@ -904,10 +2004,30 @@
 
     <div class="doc doc-contents ">
 
-        <p>Get the information of the device.</p>
-<h5 id="one_axis_stage.axis.StageAxis.get_info--returns">Returns</h5>
-<p>dict
-    Information of the device.</p>
+        <p>Query the device and update local state (position, velocity, operating mode).</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Status dict from the firmware for this device.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -925,7 +2045,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Get the position of the device.</p>
+        <p>Query and return the current raw position, updating the local cache.</p>
 
 
     </div>
@@ -943,7 +2063,38 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set the operating mode of the device.</p>
+        <p>Set the operating mode for this axis.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>op_mode</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mode name (e.g. <code>"OP_POSITION"</code>) or integer code.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -961,7 +2112,61 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set the position of the device.</p>
+        <p>Move to an absolute raw position, clamped to [position_min, position_max].</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>position</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target raw position in device units.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="AssertionError">AssertionError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If position is outside the configured bounds.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -979,7 +2184,79 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set the velocity of the device.</p>
+        <p>Set the velocity limit, clamped to [0, velocity_max].</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>velocity</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target velocity in device units.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="AssertionError">AssertionError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If velocity exceeds the axis velocity_max.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.axis.StageAxis.to_dict" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">to_dict</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return axis configuration and current state as a plain dictionary.</p>
 
 
     </div>
@@ -1009,6 +2286,24 @@
 
 
 
+        <p>Attaches per-axis increment helpers to a StageController.</p>
+<p>For each axis registered on the controller, four bound methods are
+created dynamically at construction time:</p>
+<ul>
+<li><code>&lt;axis&gt;p</code>  - move forward by small_increment</li>
+<li><code>&lt;axis&gt;m</code>  - move backward by small_increment</li>
+<li><code>&lt;axis&gt;pp</code> - move forward by large_increment</li>
+<li><code>&lt;axis&gt;mm</code> - move backward by large_increment</li>
+</ul>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <p>With axes <code>x</code> and <code>y</code> registered, the following are available::</p>
+<pre><code>move.xp()   # small step forward on x
+move.ymm()  # large step backward on y
+</code></pre>
+</details>
 
 
 
@@ -1029,6 +2324,112 @@
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="one_axis_stage.interface.MoveInterface.move_axis_by_increment" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">move_axis_by_increment</span><span class="p">(</span><span class="n">axis_name</span><span class="p">,</span> <span class="n">direction_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fast_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Move a named axis by one increment step.</p>
+<p>Uses small_increment when fast_mode is False, large_increment otherwise.
+Out-of-bounds moves are silently swallowed and logged as errors.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>axis_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the axis to move.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>direction_forward</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True to increase position, False to decrease.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fast_mode</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, use large_increment instead of small_increment.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If axis_name is not registered on the controller.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 
 
