@@ -12,3 +12,4 @@ project_name: one-axis-stage
 project_slug: one_axis_stage
 python_requires: '3.10'
 year: '2026'
+test_on_windows: false
