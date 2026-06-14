@@ -69,10 +69,21 @@ class StageAPI(StageSerialConnection):
         return scan_result
 
     def get_info(self, device_id: int) -> dict:
-        """Return a status dict for a single device, with baud rate and operating mode resolved to human-readable strings.
+        """Return a status dict for a single device.
+
+        Baud rate and operating mode integer codes are resolved to human-readable
+        strings and added as ``baud_rate`` and ``operating_mode`` keys alongside
+        the raw integer originals.  A ``connected`` boolean is set to ``False``
+        when the bus returns the 0xFFFF no-device sentinel for ``model_number``.
 
         Args:
             device_id: Dynamixel device ID on the serial bus.
+
+        Returns:
+            Dict with at minimum the keys ``connected`` (bool), ``model_number``,
+            ``id``, ``baud_rate`` (str), ``baud_rate_int``, ``operating_mode``
+            (str), ``operating_mode_int``, ``position_raw``, and ``velocity_max``.
+            All values reflect firmware state at call time.
         """
         self.send(command="i", data=device_id, order="!cH")
         info_json = self.read_line()

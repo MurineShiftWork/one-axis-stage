@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -144,9 +143,11 @@ def test_cmd_info_exits_when_not_connected(capsys):
         "id": 20,
     }
 
-    with patch("one_axis_stage.cli._make_api", return_value=mock_api):
-        with pytest.raises(SystemExit) as exc_info:
-            cmd_info(args)
+    with (
+        patch("one_axis_stage.cli._make_api", return_value=mock_api),
+        pytest.raises(SystemExit) as exc_info,
+    ):
+        cmd_info(args)
 
     assert exc_info.value.code == 1
     captured = capsys.readouterr()

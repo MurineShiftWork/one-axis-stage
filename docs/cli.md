@@ -53,6 +53,11 @@ stage info --port /dev/ttyUSB0 --id 21
 stage info --port /dev/ttyUSB0 --id 21 --json
 ```
 
+!!! note
+    If no device responds at the given ID, the command prints an error to stderr
+    and exits with code 1.  Use `stage scan` first to confirm which IDs are
+    present on the bus.
+
 ---
 
 ## stage move
