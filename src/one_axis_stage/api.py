@@ -38,21 +38,33 @@ class StageAPI(StageSerialConnection):
         self.stage_id = stage_id
         return stage_id
 
-    def scan_for_devices(self):
+    def scan_for_devices(self, timeout: float = 8.0, idle_timeout: float = 1.0) -> str:
         """Broadcast a scan and return a newline-separated list of discovered device IDs.
 
-        Blocks for up to ~4 seconds while the controller enumerates devices on the bus.
+        Reads until there has been ``idle_timeout`` seconds of silence on the bus
+        or ``timeout`` seconds total have elapsed. Increase ``timeout`` if the bus
+        has many devices or runs at a slow baud rate.
+
+        Args:
+            timeout: Maximum total wait time in seconds.
+            idle_timeout: Stop reading after this many seconds with no new data.
         """
         self.send(command="s", order="c")
-        time.sleep(2)
 
-        # while returning lines, read until no more lines
         scan_result = ""
-        while self.connection.in_waiting > 0:
-            line = self.read_line()
-            scan_result += line + "\n"
-            logging.debug(f"Scan line: {line}")
-            time.sleep(0.05)
+        deadline = time.monotonic() + timeout
+        last_data = time.monotonic()
+
+        while time.monotonic() < deadline:
+            if self.connection.in_waiting > 0:
+                line = self.read_line()
+                scan_result += line + "\n"
+                logging.debug("Scan line: %s", line)
+                last_data = time.monotonic()
+            elif time.monotonic() - last_data > idle_timeout:
+                break
+            else:
+                time.sleep(0.05)
 
         return scan_result
 
