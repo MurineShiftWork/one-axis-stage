@@ -52,7 +52,7 @@ class StageAPI(StageSerialConnection):
             line = self.read_line()
             scan_result += line + "\n"
             logging.debug(f"Scan line: {line}")
-            time.sleep(2)
+            time.sleep(0.05)
 
         return scan_result
 
@@ -136,7 +136,9 @@ class StageAPI(StageSerialConnection):
             current_baudrate: Active baud rate used for this transaction.
             new_baudrate: Baud rate to persist on the device.
         """
-        # TODO: assert baudrate in baudrate list
+        assert new_baudrate in BAUDRATE_LOOKUP.values(), (
+            f"Invalid baudrate {new_baudrate}; valid: {sorted(BAUDRATE_LOOKUP.values())}"
+        )
 
         self.send(
             command="b",
@@ -151,7 +153,9 @@ class StageAPI(StageSerialConnection):
             current_device_id: Existing device ID used to address the device.
             new_device_id: Replacement ID to persist on the device.
         """
-        # TODO: assert device id range
+        assert 1 <= new_device_id <= 253, (
+            f"Device ID {new_device_id} out of range; must be 1-253"
+        )
 
         self.send(
             command="d",
