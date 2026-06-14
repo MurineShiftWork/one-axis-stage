@@ -42,6 +42,10 @@ def cmd_info(args: argparse.Namespace) -> None:
     api = _make_api(args.port, args.baudrate)
     try:
         info = api.get_info(args.id)
+        # model_number 65535 (0xFFFF) is the Dynamixel "no device" sentinel.
+        if info.get("model_number") == 65535:
+            print(f"No device responding at ID {args.id}.", file=sys.stderr)
+            sys.exit(1)
         if args.json:
             print(json.dumps(info, indent=2))
         else:
