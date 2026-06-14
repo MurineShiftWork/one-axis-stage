@@ -1,6 +1,6 @@
 import logging
-import os
 import time
+from pathlib import Path
 
 import yaml
 
@@ -17,12 +17,8 @@ if __name__ == "__main__":
     for handler in logging.getLogger().handlers:
         handler.setFormatter(formatter)
 
-    # Get the path of the current script
-    script_path = os.path.dirname(os.path.abspath(__file__))
-
-    # Load the configuration file
-    config_file = os.path.join(script_path, "example_config.yaml")
-    with open(config_file) as f:
+    config_file = Path(__file__).resolve().parent / "example_config.yaml"
+    with config_file.open() as f:
         config = yaml.safe_load(f)
 
     # Your controller logic goes here
