@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import sys
+from unittest.mock import MagicMock, patch
+
 import pytest
 
-from one_axis_stage.cli import _build_parser
+from one_axis_stage.cli import _build_parser, cmd_info
 
 
 def test_parser_help_does_not_raise():
@@ -123,3 +126,52 @@ def test_unknown_subcommand_exits():
     parser = _build_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["notacommand"])
+
+
+# ---------------------------------------------------------------------------
+# cmd_info: connected flag
+
+
+def test_cmd_info_exits_when_not_connected(capsys):
+    """cmd_info must exit(1) when api.get_info returns connected=False."""
+    parser = _build_parser()
+    args = parser.parse_args(["info", "--port", "/dev/ttyUSB0", "--id", "20"])
+
+    mock_api = MagicMock()
+    mock_api.get_info.return_value = {
+        "connected": False,
+        "model_number": 65535,
+        "id": 20,
+    }
+
+    with patch("one_axis_stage.cli._make_api", return_value=mock_api):
+        with pytest.raises(SystemExit) as exc_info:
+            cmd_info(args)
+
+    assert exc_info.value.code == 1
+    captured = capsys.readouterr()
+    assert "No device" in captured.err
+
+
+def test_cmd_info_prints_when_connected(capsys):
+    """cmd_info must print fields when api.get_info returns connected=True."""
+    parser = _build_parser()
+    args = parser.parse_args(["info", "--port", "/dev/ttyUSB0", "--id", "21"])
+
+    mock_api = MagicMock()
+    mock_api.get_info.return_value = {
+        "connected": True,
+        "model_number": 1060,
+        "id": 21,
+        "baud_rate": "115200",
+        "baud_rate_int": 3,
+        "operating_mode": "position",
+        "operating_mode_int": 3,
+    }
+
+    with patch("one_axis_stage.cli._make_api", return_value=mock_api):
+        cmd_info(args)
+
+    captured = capsys.readouterr()
+    assert "model_number" in captured.out
+    assert "1060" in captured.out

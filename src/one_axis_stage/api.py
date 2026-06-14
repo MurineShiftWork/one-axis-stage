@@ -80,6 +80,9 @@ class StageAPI(StageSerialConnection):
         # to dict
         info_dict = json.loads(info_json)
 
+        # 0xFFFF is the Dynamixel "no device" sentinel returned when nothing responds.
+        info_dict["connected"] = info_dict.get("model_number") != 65535
+
         # resolve baud_rate_int -> baud_rate, same for operating mode
         info_dict["baud_rate"] = BAUDRATE_LOOKUP.get(info_dict["baud_rate_int"])
         info_dict["operating_mode"] = self._op_mode_int_to_str(
