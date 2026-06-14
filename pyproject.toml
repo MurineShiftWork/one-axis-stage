@@ -22,7 +22,11 @@ Homepage = "https://github.com/murineshiftwork/one-axis-stage"
 Documentation = "https://murineshiftwork.github.io/one-axis-stage/"
 "Issue Tracker" = "https://github.com/murineshiftwork/one-axis-stage/issues"
 
+[project.scripts]
+stage = "one_axis_stage.cli:main"
+
 [project.optional-dependencies]
+cli = ["readchar"]
 dev = [
     "commitizen",
     "pytest",
