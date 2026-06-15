@@ -122,6 +122,15 @@ def cmd_jog(args: argparse.Namespace) -> None:
         _jog_bare_mode(args, readchar)
 
 
+def _pos_bar(pos: int, pos_min: int, pos_max: int, width: int = 32) -> str:
+    """Return a fixed-width ASCII bar showing position within [pos_min, pos_max]."""
+    span = pos_max - pos_min
+    ratio = (pos - pos_min) / span if span else 0.0
+    ratio = max(0.0, min(1.0, ratio))
+    idx = int(ratio * (width - 1))
+    return "[" + "-" * idx + "|" + "-" * (width - 1 - idx) + "]"
+
+
 def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
     from one_axis_stage.api import StageAPI
 
@@ -129,32 +138,43 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
     api.connect()
 
     pos = api.get_position(args.id)
-    small = args.small
+    step = args.small
     large = args.large
     pos_min = args.min
     pos_max = args.max
 
+    def _status() -> str:
+        bar = _pos_bar(pos, pos_min, pos_max)
+        return f"\r  pos={pos:>6}  step={step:<5}  {pos_min} {bar} {pos_max}   "
+
     print(f"Jogging device {args.id} on {args.port}")
-    print(f"Position: {pos}  |  range: {pos_min}-{pos_max}  |  steps: {small}/{large}")
-    print(
-        "Keys: right/l=+small  left/h=-small  up/k=+large  down/j=-large  p=print  q=quit"
-    )
+    print("  right/l +step   left/h -step   up/k +big   down/j -big")
+    print("  [ half-step   ] double-step   p refresh   q quit")
+    print(_status(), end="", flush=True)
 
     try:
         while True:
             key = readchar.readkey()
             delta = None
             if key in (readchar.key.RIGHT, "l"):
-                delta = small
+                delta = step
             elif key in (readchar.key.LEFT, "h"):
-                delta = -small
+                delta = -step
             elif key in (readchar.key.UP, "k"):
                 delta = large
             elif key in (readchar.key.DOWN, "j"):
                 delta = -large
+            elif key == "[":
+                step = max(1, step // 2)
+                print(_status(), end="", flush=True)
+                continue
+            elif key == "]":
+                step = step * 2
+                print(_status(), end="", flush=True)
+                continue
             elif key == "p":
                 pos = api.get_position(args.id)
-                print(f"Position: {pos}")
+                print(_status(), end="", flush=True)
                 continue
             elif key in ("q", readchar.key.CTRL_C):
                 break
@@ -163,7 +183,7 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
                 new_pos = max(pos_min, min(pos_max, pos + delta))
                 api.set_position(args.id, new_pos)
                 pos = api.get_position(args.id)
-                print(f"\rPosition: {pos}  ", end="", flush=True)
+                print(_status(), end="", flush=True)
     except KeyboardInterrupt:
         pass
     finally:
@@ -176,16 +196,26 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
     from one_axis_stage.interface import MoveInterface
 
     controller = StageController.from_config(args.config)
-    move = MoveInterface(
-        controller,
-        small_increment=args.small,
-        large_increment=args.large,
-    )
+    small = args.small
+    large = args.large
+
+    def _make_move() -> MoveInterface:
+        return MoveInterface(controller, small_increment=small, large_increment=large)
+
+    move = _make_move()
 
     axis_names = list(controller.axes.keys())
     print(f"Jogging axes: {axis_names}")
-    print("Keys per axis: <axis>p/m = small +/-   <axis>P/M = large +/-   q = quit")
-    print("Example: 'xp' moves x forward one small step")
+    print("  <axis>p/m +/-step   <axis>P/M +/-big   [ half-step   ] double-step   q quit")
+    print("  Example: 'xp' = x forward one step")
+
+    def _status() -> str:
+        parts = []
+        for name in axis_names:
+            ax = controller.axes[name]
+            bar = _pos_bar(ax.position_raw, ax.position_min, ax.position_max)
+            parts.append(f"{name}={ax.position_raw:>6}  {ax.position_min} {bar} {ax.position_max}")
+        return "\r  " + "   |   ".join(parts) + f"   step={small}   "
 
     # Build dispatch: lowercase p/m = small, uppercase P/M = large
     dispatch: dict[str, Any] = {}
@@ -201,6 +231,24 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
             key = readchar.readkey()
             if key in ("q", readchar.key.CTRL_C):
                 break
+            if key == "[":
+                small = max(1, small // 2)
+                move = _make_move()
+                dispatch.update({
+                    f"{n}{s}": getattr(move, f"{n}{s}")
+                    for n in axis_names for s in ("p", "m", "pp", "mm")
+                })
+                print(_status(), end="", flush=True)
+                continue
+            if key == "]":
+                small = small * 2
+                move = _make_move()
+                dispatch.update({
+                    f"{n}{s}": getattr(move, f"{n}{s}")
+                    for n in axis_names for s in ("p", "m", "pp", "mm")
+                })
+                print(_status(), end="", flush=True)
+                continue
             buf += key
             # Try longest match first, then single char
             matched = None
@@ -211,9 +259,7 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
             if matched:
                 dispatch[matched]()
                 buf = ""
-                # Print current positions
-                positions = {n: controller.axes[n].position_raw for n in axis_names}
-                print(f"\r{positions}  ", end="", flush=True)
+                print(_status(), end="", flush=True)
     except KeyboardInterrupt:
         pass
     finally:
@@ -293,7 +339,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "--small", type=int, default=20, help="Small step size (default 20)."
     )
     p_jog.add_argument(
-        "--large", type=int, default=200, help="Large step size (default 200)."
+        "--large", type=int, default=40, help="Large step size (default 40)."
     )
     p_jog.add_argument(
         "--min", type=int, default=0, dest="min", help="Soft lower limit (default 0)."

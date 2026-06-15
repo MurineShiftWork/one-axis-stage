@@ -100,7 +100,7 @@ def test_jog_defaults():
     parser = _build_parser()
     args = parser.parse_args(["jog", "--port", "/dev/ttyUSB0", "--id", "21"])
     assert args.small == 20
-    assert args.large == 200
+    assert args.large == 40
     assert args.min == 0
     assert args.max == 65535
     assert args.config is None
