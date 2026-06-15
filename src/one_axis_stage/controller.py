@@ -56,7 +56,7 @@ class StageController:
                 "timeout": self.timeout,
             },
             "axes": {
-                axis_name: axis.__dict__() for axis_name, axis in self.axes.items()
+                axis_name: axis.to_dict() for axis_name, axis in self.axes.items()
             },
             "known_positions": self.known_positions,
         }
