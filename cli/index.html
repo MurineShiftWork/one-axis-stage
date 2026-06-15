@@ -446,21 +446,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#keyboard-map-bare-mode" class="md-nav__link">
+  <a href="#keyboard-map" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Keyboard map - bare mode
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#keyboard-map-config-mode-multi-axis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Keyboard map - config mode (multi-axis)
+        Keyboard map
       
     </span>
   </a>
@@ -686,95 +675,59 @@ stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 <p>Two launch modes:</p>
 <p><strong>Bare mode</strong> (<code>--port</code> + <code>--id</code>): quick single-device jog with optional soft limits.</p>
 <p><strong>Config mode</strong> (<code>--config</code>): load a <code>StageController</code> YAML for named multi-axis jog.</p>
-<h3 id="keyboard-map-bare-mode">Keyboard map - bare mode</h3>
+<h3 id="keyboard-map">Keyboard map</h3>
+<p>The same key scheme applies in both bare mode and config mode.
+The first three axes are mapped to key groups in order:</p>
 <table>
 <thead>
 <tr>
 <th>Key</th>
+<th>Axis</th>
 <th>Action</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Right arrow / <code>l</code></td>
-<td>Step forward</td>
+<td><code>w</code> / <code>s</code></td>
+<td>ids[0] / first axis (y)</td>
+<td>Step +/-</td>
 </tr>
 <tr>
-<td>Left arrow / <code>h</code></td>
-<td>Step backward</td>
+<td><code>a</code> / <code>d</code></td>
+<td>ids[1] / second axis (x)</td>
+<td>Step +/-</td>
 </tr>
 <tr>
-<td>Up arrow / <code>k</code></td>
-<td>Big step forward</td>
+<td>Up / Down arrow</td>
+<td>ids[2] / third axis (z)</td>
+<td>Step +/-</td>
 </tr>
 <tr>
-<td>Down arrow / <code>j</code></td>
-<td>Big step backward</td>
-</tr>
-<tr>
-<td><code>[</code></td>
+<td><code>-</code> / <code>_</code></td>
+<td>-</td>
 <td>Halve step size</td>
 </tr>
 <tr>
-<td><code>]</code></td>
+<td><code>+</code> / <code>=</code></td>
+<td>-</td>
 <td>Double step size</td>
 </tr>
 <tr>
 <td><code>p</code></td>
-<td>Refresh position</td>
+<td>-</td>
+<td>Refresh position from hardware</td>
 </tr>
 <tr>
 <td><code>q</code> / Ctrl-C</td>
+<td>-</td>
 <td>Quit</td>
 </tr>
 </tbody>
 </table>
-<p>The status line updates after every move:</p>
-<pre><code>pos=   599  step=20   0 [--------|-----------------------] 65535
+<p>The status line updates after every move (one entry per axis):</p>
+<pre><code>y(id=21)=  599  0 [-----|---------] 1023   |   x(id=22)=  300  0 [---|------] 1023   step=20
 </code></pre>
-<h3 id="keyboard-map-config-mode-multi-axis">Keyboard map - config mode (multi-axis)</h3>
-<p>Keys are generated per axis name. With axes <code>x</code> and <code>y</code>:</p>
-<table>
-<thead>
-<tr>
-<th>Key</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>xp</code></td>
-<td>x step forward</td>
-</tr>
-<tr>
-<td><code>xm</code></td>
-<td>x step backward</td>
-</tr>
-<tr>
-<td><code>xP</code></td>
-<td>x big step forward</td>
-</tr>
-<tr>
-<td><code>xM</code></td>
-<td>x big step backward</td>
-</tr>
-<tr>
-<td><code>[</code></td>
-<td>Halve step size</td>
-</tr>
-<tr>
-<td><code>]</code></td>
-<td>Double step size</td>
-</tr>
-<tr>
-<td><code>q</code> / Ctrl-C</td>
-<td>Quit</td>
-</tr>
-</tbody>
-</table>
-<p>Per-axis bars are shown after each move:</p>
-<pre><code>x=   599  0 [-----|--------------------------] 65535   |   y=   300  0 [---|----------------------------] 65535   step=20
-</code></pre>
+<p>In config mode the axis names from the YAML file are shown instead of <code>y</code>/<code>x</code>/<code>z</code>.</p>
 <h3 id="flags">Flags</h3>
 <table>
 <thead>
