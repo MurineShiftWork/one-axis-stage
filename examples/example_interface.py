@@ -42,23 +42,23 @@ if __name__ == "__main__":
 
     print(ctrl)
 
-    move.move_axis_by_increment("x", -1)
+    move.move_axis_by_increment("x", direction_forward=False)
 
     for _ in range(5):
         time.sleep(0.5)
-        move.move_axis_by_increment("y", -1)
+        move.move_axis_by_increment("y", direction_forward=False)
 
-    move.move_axis_by_increment("y", 1)
+    move.move_axis_by_increment("y", direction_forward=True)
 
     # ctrl.small_in
 
     ctrl.move_to_position({"x": 300, "y": 300, "z": 300})
-    ctrl.save_known_position("front")
+    ctrl.save_as_known_position("front")
 
     time.sleep(1)
 
     ctrl.move_to_position({"x": 300, "y": 600, "z": 300})
-    ctrl.save_known_position("back")
+    ctrl.save_as_known_position("back")
 
     time.sleep(1)
 
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         )
         time.sleep(2)
 
-    ctrl.save_known_position("home")
+    ctrl.save_as_known_position("home")
 
     ctrl.move_to_position({"y": 250})
 

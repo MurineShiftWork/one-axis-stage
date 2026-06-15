@@ -26,16 +26,16 @@ if __name__ == "__main__":
     # ctrl.ping_axes()
 
     ctrl.move_to_position({"x": 300, "y": 300, "z": 300})
-    ctrl.save_known_position("front")
+    ctrl.save_as_known_position("front")
 
     time.sleep(1)
 
     ctrl.move_to_position({"x": 300, "y": 600, "z": 300})
-    ctrl.save_known_position("back")
+    ctrl.save_as_known_position("back")
 
     time.sleep(1)
 
-    ctrl.save_config(config_file=config_file + "_saved.yaml")
+    ctrl.save_config(config_file=config_file.with_name("example_config_saved.yaml"))
 
     # move all axes in increments along the above position to the one below
     inc = 20
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         )
         time.sleep(2)
 
-    ctrl.save_known_position("home")
+    ctrl.save_as_known_position("home")
 
     ctrl.move_to_position({"y": 250})
 
