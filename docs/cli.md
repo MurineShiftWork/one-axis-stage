@@ -134,44 +134,28 @@ Two launch modes:
 
 **Config mode** (`--config`): load a `StageController` YAML for named multi-axis jog.
 
-### Keyboard map - bare mode
+### Keyboard map
 
-| Key | Action |
-|---|---|
-| Right arrow / `l` | Step forward |
-| Left arrow / `h` | Step backward |
-| Up arrow / `k` | Big step forward |
-| Down arrow / `j` | Big step backward |
-| `[` | Halve step size |
-| `]` | Double step size |
-| `p` | Refresh position |
-| `q` / Ctrl-C | Quit |
+The same key scheme applies in both bare mode and config mode.
+The first three axes are mapped to key groups in order:
 
-The status line updates after every move:
+| Key | Axis | Action |
+|---|---|---|
+| `w` / `s` | ids[0] / first axis (y) | Step +/- |
+| `a` / `d` | ids[1] / second axis (x) | Step +/- |
+| Up / Down arrow | ids[2] / third axis (z) | Step +/- |
+| `-` / `_` | - | Halve step size |
+| `+` / `=` | - | Double step size |
+| `p` | - | Refresh position from hardware |
+| `q` / Ctrl-C | - | Quit |
 
-```
-pos=   599  step=20   0 [--------|-----------------------] 65535
-```
-
-### Keyboard map - config mode (multi-axis)
-
-Keys are generated per axis name. With axes `x` and `y`:
-
-| Key | Action |
-|---|---|
-| `xp` | x step forward |
-| `xm` | x step backward |
-| `xP` | x big step forward |
-| `xM` | x big step backward |
-| `[` | Halve step size |
-| `]` | Double step size |
-| `q` / Ctrl-C | Quit |
-
-Per-axis bars are shown after each move:
+The status line updates after every move (one entry per axis):
 
 ```
-x=   599  0 [-----|--------------------------] 65535   |   y=   300  0 [---|----------------------------] 65535   step=20
+y(id=21)=  599  0 [-----|---------] 1023   |   x(id=22)=  300  0 [---|------] 1023   step=20
 ```
+
+In config mode the axis names from the YAML file are shown instead of `y`/`x`/`z`.
 
 ### Flags
 
