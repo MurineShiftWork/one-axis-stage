@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://murineshiftwork.github.io/one-axis-stage/api/">
       
       
-        <link rel="prev" href="../usage/">
+        <link rel="prev" href="../cli/">
       
       
       
@@ -298,6 +298,33 @@
     
   
     Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
   
 
     
@@ -929,7 +956,11 @@ Each method corresponds to one firmware command.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return a status dict for a single device, with baud rate and operating mode resolved to human-readable strings.</p>
+        <p>Return a status dict for a single device.</p>
+<p>Baud rate and operating mode integer codes are resolved to human-readable
+strings and added as <code>baud_rate</code> and <code>operating_mode</code> keys alongside
+the raw integer originals.  A <code>connected</code> boolean is set to <code>False</code>
+when the bus returns the 0xFFFF no-device sentinel for <code>model_number</code>.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -957,6 +988,59 @@ Each method corresponds to one firmware command.</p>
             </td>
             <td>
                 <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dict with at minimum the keys <code>connected</code> (bool), <code>model_number</code>,</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>id</code>, <code>baud_rate</code> (str), <code>baud_rate_int</code>, <code>operating_mode</code></p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(str), <code>operating_mode_int</code>, <code>position_raw</code>, and <code>velocity_max</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>All values reflect firmware state at call time.</p>
+              </div>
             </td>
           </tr>
       </tbody>
@@ -1025,7 +1109,7 @@ Each method corresponds to one firmware command.</p>
 
 
 <h3 id="one_axis_stage.api.StageAPI.scan_for_devices" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">scan_for_devices</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">scan_for_devices</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span> <span class="n">idle_timeout</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
 
 </h3>
 
@@ -1033,7 +1117,56 @@ Each method corresponds to one firmware command.</p>
     <div class="doc doc-contents ">
 
         <p>Broadcast a scan and return a newline-separated list of discovered device IDs.</p>
-<p>Blocks for up to ~4 seconds while the controller enumerates devices on the bus.</p>
+<p>Reads until there has been <code>idle_timeout</code> seconds of silence on the bus
+or <code>timeout</code> seconds total have elapsed. Increase <code>timeout</code> if the bus
+has many devices or runs at a slow baud rate.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>timeout</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum total wait time in seconds.</p>
+              </div>
+            </td>
+            <td>
+                  <code>8.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>idle_timeout</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Stop reading after this many seconds with no new data.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>

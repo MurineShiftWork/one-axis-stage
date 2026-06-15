@@ -12,13 +12,13 @@
         <meta name="author" content="Lars B. Rollik">
       
       
-        <link rel="canonical" href="https://murineshiftwork.github.io/one-axis-stage/usage/">
+        <link rel="canonical" href="https://murineshiftwork.github.io/one-axis-stage/cli/">
       
       
-        <link rel="prev" href="../getting_started/">
+        <link rel="prev" href="../usage/">
       
       
-        <link rel="next" href="../cli/">
+        <link rel="next" href="../api/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Usage - one-axis-stage</title>
+        <title>CLI - one-axis-stage</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#usage" class="md-skip">
+        <a href="#cli-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Usage
+              CLI
             
           </span>
         </div>
@@ -289,6 +289,33 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -308,7 +335,7 @@
   <span class="md-ellipsis">
     
   
-    Usage
+    CLI
   
 
     
@@ -326,7 +353,7 @@
   <span class="md-ellipsis">
     
   
-    Usage
+    CLI
   
 
     
@@ -352,22 +379,77 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#moving-axes" class="md-nav__link">
+  <a href="#stage-scan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Moving axes
+        stage scan
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Moving axes">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stage info
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-move" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stage move
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-set-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stage set-id
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-set-baudrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stage set-baudrate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-jog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stage jog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="stage jog">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#single-axis-absolute-move" class="md-nav__link">
+  <a href="#keyboard-map-bare-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Single-axis absolute move
+        Keyboard map - bare mode
       
     </span>
   </a>
@@ -375,10 +457,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#multi-axis-simultaneous-move" class="md-nav__link">
+  <a href="#keyboard-map-config-mode-multi-axis" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Multi-axis simultaneous move
+        Keyboard map - config mode (multi-axis)
       
     </span>
   </a>
@@ -386,10 +468,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#direct-axis-access" class="md-nav__link">
+  <a href="#flags" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Direct axis access
+        Flags
       
     </span>
   </a>
@@ -401,103 +483,10 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#named-positions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Named positions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#saving-and-reloading-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Saving and reloading configuration
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#incremental-moves-with-moveinterface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Incremental moves with MoveInterface
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#device-identification-and-scanning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Device identification and scanning
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#changing-operating-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Changing operating mode
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#logging" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logging
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CLI
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -549,84 +538,273 @@
   
 
 
-<h1 id="usage">Usage</h1>
-<h2 id="moving-axes">Moving axes</h2>
-<h3 id="single-axis-absolute-move">Single-axis absolute move</h3>
-<pre><code class="language-python">ctrl.move_to_position({&quot;x&quot;: 500})
+<h1 id="cli-reference">CLI reference</h1>
+<p>Installing <code>one-axis-stage</code> registers the <code>stage</code> command.</p>
+<p>For interactive jog mode also install the <code>cli</code> extra:</p>
+<pre><code class="language-bash">pip install &quot;one-axis-stage[cli]&quot;
 </code></pre>
-<h3 id="multi-axis-simultaneous-move">Multi-axis simultaneous move</h3>
-<p>All target positions are sent in a single serial packet so the axes start
-moving at the same time:</p>
-<pre><code class="language-python">ctrl.move_to_position({&quot;x&quot;: 300, &quot;y&quot;: 600, &quot;z&quot;: 250})
+<hr />
+<h2 id="stage-scan">stage scan</h2>
+<p>Broadcast a scan and print discovered device IDs.</p>
+<pre><code>stage scan --port PORT [--baudrate BAUD]
 </code></pre>
-<h3 id="direct-axis-access">Direct axis access</h3>
-<p>Individual axes expose <code>set_position</code> and <code>get_position</code> directly:</p>
-<pre><code class="language-python">axis = ctrl.axes[&quot;y&quot;]
-print(axis.get_position())   # raw position int
-axis.set_position(450)
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--port</code></td>
+<td>required</td>
+<td>Serial port (e.g. <code>/dev/ttyUSB0</code>, <code>COM3</code>).</td>
+</tr>
+<tr>
+<td><code>--baudrate</code></td>
+<td><code>115200</code></td>
+<td>Connection baud rate.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">stage scan --port /dev/ttyUSB0
 </code></pre>
-<h2 id="named-positions">Named positions</h2>
-<p>Save and recall named positions to repeat common locations without
-hardcoding coordinates:</p>
-<pre><code class="language-python"># Save wherever the stage is right now
-ctrl.save_as_known_position(&quot;loading&quot;)
+<hr />
+<h2 id="stage-info">stage info</h2>
+<p>Print status (baud rate, operating mode, position) for a single device.</p>
+<pre><code>stage info --port PORT --id ID [--baudrate BAUD] [--json]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--port</code></td>
+<td>required</td>
+<td>Serial port.</td>
+</tr>
+<tr>
+<td><code>--id</code></td>
+<td>required</td>
+<td>Device ID (integer).</td>
+</tr>
+<tr>
+<td><code>--baudrate</code></td>
+<td><code>115200</code></td>
+<td>Connection baud rate.</td>
+</tr>
+<tr>
+<td><code>--json</code></td>
+<td>off</td>
+<td>Emit raw JSON instead of formatted table.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">stage info --port /dev/ttyUSB0 --id 21
+stage info --port /dev/ttyUSB0 --id 21 --json
+</code></pre>
+<p>!!! note
+    If no device responds at the given ID, the command prints an error to stderr
+    and exits with code 1.  Use <code>stage scan</code> first to confirm which IDs are
+    present on the bus.</p>
+<hr />
+<h2 id="stage-move">stage move</h2>
+<p>Move a device to an absolute raw position, then print the confirmed position.</p>
+<pre><code>stage move --port PORT --id ID --position POS [--baudrate BAUD]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--port</code></td>
+<td>required</td>
+<td>Serial port.</td>
+</tr>
+<tr>
+<td><code>--id</code></td>
+<td>required</td>
+<td>Device ID.</td>
+</tr>
+<tr>
+<td><code>--position</code></td>
+<td>required</td>
+<td>Target position (raw units, integer).</td>
+</tr>
+<tr>
+<td><code>--baudrate</code></td>
+<td><code>115200</code></td>
+<td>Connection baud rate.</td>
+</tr>
+</tbody>
+</table>
+<p>!!! note
+    No soft limits are enforced here. Confirm the valid range with
+    <code>stage info</code> before moving to an untested position.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">stage move --port /dev/ttyUSB0 --id 21 --position 400
+</code></pre>
+<hr />
+<h2 id="stage-set-id">stage set-id</h2>
+<p>Reassign the device ID stored on a device.</p>
+<pre><code>stage set-id --port PORT --id CURRENT_ID --new-id NEW_ID [--baudrate BAUD]
+</code></pre>
+<p>!!! warning
+    After this command the device responds only on the new ID.
+    Reconnect with <code>--id NEW_ID</code>.</p>
+<hr />
+<h2 id="stage-set-baudrate">stage set-baudrate</h2>
+<p>Change the baud rate persisted on a device.</p>
+<pre><code>stage set-baudrate --port PORT --id ID --current-baud CUR --new-baud NEW
+</code></pre>
+<p>Valid baud rates: <code>9600</code>, <code>57600</code>, <code>115200</code>, <code>1000000</code>.</p>
+<p>!!! warning
+    After this command the device responds only on the new baud rate.
+    Reconnect with <code>--baudrate NEW</code>.</p>
+<hr />
+<h2 id="stage-jog">stage jog</h2>
+<p>Interactive keyboard jog mode. Requires <code>pip install "one-axis-stage[cli]"</code>.</p>
+<pre><code>stage jog --port PORT --id ID [--baudrate BAUD]
+          [--small STEP] [--large STEP] [--min MIN] [--max MAX]
 
-# Move elsewhere, then return
-ctrl.move_to_position({&quot;x&quot;: 700, &quot;y&quot;: 700})
-ctrl.move_to_known_position(&quot;loading&quot;)
-
-# Remove a saved position
-ctrl.remove_known_position(&quot;loading&quot;)
+stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 </code></pre>
-<p>Named positions survive a <code>save_config</code> / <code>from_config</code> round-trip.</p>
-<h2 id="saving-and-reloading-configuration">Saving and reloading configuration</h2>
-<pre><code class="language-python"># Write current state (axes, known positions, connection params) to YAML
-ctrl.save_config(&quot;my_stage.yaml&quot;)
-
-# Reload in a later session
-ctrl = StageController.from_config(&quot;my_stage.yaml&quot;)
-</code></pre>
-<h2 id="incremental-moves-with-moveinterface">Incremental moves with MoveInterface</h2>
-<p><code>MoveInterface</code> is useful for interactive fine-tuning.
-It wraps a controller and exposes per-axis step methods:</p>
-<pre><code class="language-python">from one_axis_stage.interface import MoveInterface
-
-move = MoveInterface(ctrl, small_increment=20, large_increment=40)
-
-move.xp()    # x +20
-move.xm()    # x -20
-move.xpp()   # x +40
-move.xmm()   # x -40
-
-# Same pattern for every registered axis
-move.yp()
-move.ymm()
-</code></pre>
-<p>Out-of-bounds moves are caught and logged rather than raising an exception,
-so these helpers are safe to call in loops or GUI callbacks.</p>
-<h2 id="device-identification-and-scanning">Device identification and scanning</h2>
-<p>Flash the LED on a device to identify it physically:</p>
-<pre><code class="language-python">ctrl.api.flash(device_id=21, duration_ms=500, repeats=3)
-</code></pre>
-<p>Scan the bus to discover which device IDs are online:</p>
-<pre><code class="language-python">results = ctrl.api.scan_for_devices()
-print(results)
-</code></pre>
-<h2 id="changing-operating-mode">Changing operating mode</h2>
-<pre><code class="language-python"># By name
-ctrl.api.set_operating_mode(device_id=21, op_mode=&quot;OP_VELOCITY&quot;)
-
-# By integer code
-ctrl.api.set_operating_mode(device_id=21, op_mode=3)
-</code></pre>
-<p>Available modes: <code>OP_POSITION</code>, <code>OP_EXTENDED_POSITION</code>,
-<code>OP_CURRENT_BASED_POSITION</code>, <code>OP_VELOCITY</code>, <code>OP_PWM</code>, <code>OP_CURRENT</code>.</p>
-<h2 id="logging">Logging</h2>
-<p>The package uses the standard <code>logging</code> module.
-Enable debug output to see every command sent over the serial link:</p>
-<pre><code class="language-python">import logging
-logging.basicConfig(level=logging.DEBUG)
-</code></pre>
+<p>Two launch modes:</p>
+<p><strong>Bare mode</strong> (<code>--port</code> + <code>--id</code>): quick single-device jog with optional soft limits.</p>
+<p><strong>Config mode</strong> (<code>--config</code>): load a <code>StageController</code> YAML for named multi-axis jog.</p>
+<h3 id="keyboard-map-bare-mode">Keyboard map - bare mode</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Right arrow / <code>l</code></td>
+<td>Small step forward</td>
+</tr>
+<tr>
+<td>Left arrow / <code>h</code></td>
+<td>Small step backward</td>
+</tr>
+<tr>
+<td>Up arrow / <code>k</code></td>
+<td>Large step forward</td>
+</tr>
+<tr>
+<td>Down arrow / <code>j</code></td>
+<td>Large step backward</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Print current position</td>
+</tr>
+<tr>
+<td><code>q</code> / Ctrl-C</td>
+<td>Quit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="keyboard-map-config-mode-multi-axis">Keyboard map - config mode (multi-axis)</h3>
+<p>Keys are generated per axis name. With axes <code>x</code> and <code>y</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xp</code></td>
+<td>x small step forward</td>
+</tr>
+<tr>
+<td><code>xm</code></td>
+<td>x small step backward</td>
+</tr>
+<tr>
+<td><code>xP</code></td>
+<td>x large step forward</td>
+</tr>
+<tr>
+<td><code>xM</code></td>
+<td>x large step backward</td>
+</tr>
+<tr>
+<td><code>q</code> / Ctrl-C</td>
+<td>Quit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flags">Flags</h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--port</code></td>
+<td>required (bare)</td>
+<td>Serial port.</td>
+</tr>
+<tr>
+<td><code>--id</code></td>
+<td>required (bare)</td>
+<td>Device ID.</td>
+</tr>
+<tr>
+<td><code>--baudrate</code></td>
+<td><code>115200</code></td>
+<td>Connection baud rate.</td>
+</tr>
+<tr>
+<td><code>--config</code></td>
+<td>—</td>
+<td>Path to StageController YAML (multi-axis mode).</td>
+</tr>
+<tr>
+<td><code>--small</code></td>
+<td><code>20</code></td>
+<td>Small step size (raw units).</td>
+</tr>
+<tr>
+<td><code>--large</code></td>
+<td><code>200</code></td>
+<td>Large step size (raw units).</td>
+</tr>
+<tr>
+<td><code>--min</code></td>
+<td><code>0</code></td>
+<td>Soft lower position limit (bare mode).</td>
+</tr>
+<tr>
+<td><code>--max</code></td>
+<td><code>65535</code></td>
+<td>Soft upper position limit (bare mode).</td>
+</tr>
+</tbody>
+</table>
 
 
 
