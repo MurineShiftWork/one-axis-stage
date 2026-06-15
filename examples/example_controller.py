@@ -1,11 +1,10 @@
 import logging
-import os
 import time
+from pathlib import Path
 
 import yaml
 
 from one_axis_stage.controller import StageController
-from one_axis_stage.interface import MoveInterface
 
 if __name__ == "__main__":
     # Set up logging
@@ -18,55 +17,25 @@ if __name__ == "__main__":
     for handler in logging.getLogger().handlers:
         handler.setFormatter(formatter)
 
-    # Get the path of the current script
-    script_path = os.path.dirname(os.path.abspath(__file__))
-
-    # Load the configuration file
-    config_file = os.path.join(script_path, "example_config.yaml")
-    with open(config_file) as f:
+    config_file = Path(__file__).resolve().parent / "example_config.yaml"
+    with config_file.open() as f:
         config = yaml.safe_load(f)
 
     # Your controller logic goes here
     ctrl = StageController.from_config(config_file)
-
-    ctrl.move_to_known_position("back")
-    ctrl.move_to_known_position("center")
-
-    ctrl.axes["y"].set_position(500)
-    time.sleep(1)
-    ctrl.save_as_known_position("front")
-
-    ctrl.move_to_known_position("back")
-
-    ctrl.move_to_known_position("front")
-
-    ctrl.axes["y"].set_position(800)
-
-    move = MoveInterface(ctrl, small_increment=20, large_increment=40)
-
-    print(ctrl)
-
-    move.move_axis_by_increment("x", -1)
-
-    for _ in range(5):
-        time.sleep(0.5)
-        move.move_axis_by_increment("y", -1)
-
-    move.move_axis_by_increment("y", 1)
-
-    # ctrl.small_in
+    # ctrl.ping_axes()
 
     ctrl.move_to_position({"x": 300, "y": 300, "z": 300})
-    ctrl.save_known_position("front")
+    ctrl.save_as_known_position("front")
 
     time.sleep(1)
 
     ctrl.move_to_position({"x": 300, "y": 600, "z": 300})
-    ctrl.save_known_position("back")
+    ctrl.save_as_known_position("back")
 
     time.sleep(1)
 
-    ctrl.save_config(config_file=config_file)  # +"_saved.yaml")
+    ctrl.save_config(config_file=config_file.with_name("example_config_saved.yaml"))
 
     # move all axes in increments along the above position to the one below
     inc = 20
@@ -76,7 +45,7 @@ if __name__ == "__main__":
         )
         time.sleep(2)
 
-    ctrl.save_known_position("home")
+    ctrl.save_as_known_position("home")
 
     ctrl.move_to_position({"y": 250})
 

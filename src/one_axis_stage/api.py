@@ -38,35 +38,61 @@ class StageAPI(StageSerialConnection):
         self.stage_id = stage_id
         return stage_id
 
-    def scan_for_devices(self):
+    def scan_for_devices(self, timeout: float = 8.0, idle_timeout: float = 1.0) -> str:
         """Broadcast a scan and return a newline-separated list of discovered device IDs.
 
-        Blocks for up to ~4 seconds while the controller enumerates devices on the bus.
+        Reads until there has been ``idle_timeout`` seconds of silence on the bus
+        or ``timeout`` seconds total have elapsed. Increase ``timeout`` if the bus
+        has many devices or runs at a slow baud rate.
+
+        Args:
+            timeout: Maximum total wait time in seconds.
+            idle_timeout: Stop reading after this many seconds with no new data.
         """
         self.send(command="s", order="c")
-        time.sleep(2)
 
-        # while returning lines, read until no more lines
         scan_result = ""
-        while self.connection.in_waiting > 0:
-            line = self.read_line()
-            scan_result += line + "\n"
-            logging.debug(f"Scan line: {line}")
-            time.sleep(2)
+        deadline = time.monotonic() + timeout
+        last_data = time.monotonic()
+
+        while time.monotonic() < deadline:
+            if self.connection.in_waiting > 0:
+                line = self.read_line()
+                scan_result += line + "\n"
+                logging.debug("Scan line: %s", line)
+                last_data = time.monotonic()
+            elif time.monotonic() - last_data > idle_timeout:
+                break
+            else:
+                time.sleep(0.05)
 
         return scan_result
 
     def get_info(self, device_id: int) -> dict:
-        """Return a status dict for a single device, with baud rate and operating mode resolved to human-readable strings.
+        """Return a status dict for a single device.
+
+        Baud rate and operating mode integer codes are resolved to human-readable
+        strings and added as ``baud_rate`` and ``operating_mode`` keys alongside
+        the raw integer originals.  A ``connected`` boolean is set to ``False``
+        when the bus returns the 0xFFFF no-device sentinel for ``model_number``.
 
         Args:
             device_id: Dynamixel device ID on the serial bus.
+
+        Returns:
+            Dict with at minimum the keys ``connected`` (bool), ``model_number``,
+            ``id``, ``baud_rate`` (str), ``baud_rate_int``, ``operating_mode``
+            (str), ``operating_mode_int``, ``position_raw``, and ``velocity_max``.
+            All values reflect firmware state at call time.
         """
         self.send(command="i", data=device_id, order="!cH")
         info_json = self.read_line()
 
         # to dict
         info_dict = json.loads(info_json)
+
+        # 0xFFFF is the Dynamixel "no device" sentinel returned when nothing responds.
+        info_dict["connected"] = info_dict.get("model_number") != 65535
 
         # resolve baud_rate_int -> baud_rate, same for operating mode
         info_dict["baud_rate"] = BAUDRATE_LOOKUP.get(info_dict["baud_rate_int"])
@@ -136,7 +162,9 @@ class StageAPI(StageSerialConnection):
             current_baudrate: Active baud rate used for this transaction.
             new_baudrate: Baud rate to persist on the device.
         """
-        # TODO: assert baudrate in baudrate list
+        assert new_baudrate in BAUDRATE_LOOKUP.values(), (
+            f"Invalid baudrate {new_baudrate}; valid: {sorted(BAUDRATE_LOOKUP.values())}"
+        )
 
         self.send(
             command="b",
@@ -151,7 +179,9 @@ class StageAPI(StageSerialConnection):
             current_device_id: Existing device ID used to address the device.
             new_device_id: Replacement ID to persist on the device.
         """
-        # TODO: assert device id range
+        assert 1 <= new_device_id <= 253, (
+            f"Device ID {new_device_id} out of range; must be 1-253"
+        )
 
         self.send(
             command="d",

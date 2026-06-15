@@ -32,4 +32,5 @@ nav:
   - Home: index.md
   - Getting Started: getting_started.md
   - Usage: usage.md
+  - CLI: cli.md
   - API Reference: api.md
