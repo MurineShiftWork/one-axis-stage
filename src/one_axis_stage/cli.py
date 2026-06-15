@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import sys
-from typing import Any
 
 
 def _make_api(port: str, baudrate: int = 115200):
@@ -122,48 +122,90 @@ def cmd_jog(args: argparse.Namespace) -> None:
         _jog_bare_mode(args, readchar)
 
 
+def _pos_bar(pos: int, pos_min: int, pos_max: int, width: int = 32) -> str:
+    """Return a fixed-width ASCII bar showing position within [pos_min, pos_max]."""
+    span = pos_max - pos_min
+    ratio = (pos - pos_min) / span if span else 0.0
+    ratio = max(0.0, min(1.0, ratio))
+    idx = int(ratio * (width - 1))
+    return "[" + "-" * idx + "|" + "-" * (width - 1 - idx) + "]"
+
+
 def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
     from one_axis_stage.api import StageAPI
 
     api = StageAPI(serial_port=args.port, baudrate=args.baudrate)
     api.connect()
 
-    pos = api.get_position(args.id)
-    small = args.small
-    large = args.large
+    ids: list[int] = args.id
+    step = args.small
     pos_min = args.min
     pos_max = args.max
 
-    print(f"Jogging device {args.id} on {args.port}")
-    print(f"Position: {pos}  |  range: {pos_min}-{pos_max}  |  steps: {small}/{large}")
-    print(
-        "Keys: right/l=+small  left/h=-small  up/k=+large  down/j=-large  p=print  q=quit"
-    )
+    # W/S → ids[0] (y), A/D → ids[1] (x), Up/Down → ids[2] (z)
+    _AXIS_LABELS = ["y", "x", "z"]
+
+    # Use get_info (JSON) for initial positions; track locally after.
+    positions: dict[int, int] = {
+        dev_id: api.get_info(dev_id)["position_raw"] for dev_id in ids
+    }
+
+    def _clamp(p: int) -> int:
+        return max(pos_min, min(pos_max, p))
+
+    def _move_axis(axis_idx: int, direction: int) -> None:
+        if axis_idx >= len(ids):
+            return
+        dev_id = ids[axis_idx]
+        new_pos = _clamp(positions[dev_id] + direction * step)
+        api.set_position(dev_id, new_pos)
+        positions[dev_id] = new_pos
+
+    def _refresh() -> None:
+        for dev_id in ids:
+            positions[dev_id] = api.get_info(dev_id)["position_raw"]
+
+    def _status() -> str:
+        parts = []
+        for i, dev_id in enumerate(ids):
+            label = _AXIS_LABELS[i] if i < len(_AXIS_LABELS) else str(i)
+            bar = _pos_bar(positions[dev_id], pos_min, pos_max)
+            parts.append(
+                f"{label}(id={dev_id})={positions[dev_id]:>5}  {pos_min} {bar} {pos_max}"
+            )
+        return "\r  " + "   |   ".join(parts) + f"   step={step}   "
+
+    id_str = " ".join(str(i) for i in ids)
+    print(f"Jogging id(s) {id_str} on {args.port}")
+    print("  w/s y+/-   a/d x+/-   up/down z+/-   -/+ speed   p refresh   q quit")
+    print(_status(), end="", flush=True)
 
     try:
         while True:
             key = readchar.readkey()
-            delta = None
-            if key in (readchar.key.RIGHT, "l"):
-                delta = small
-            elif key in (readchar.key.LEFT, "h"):
-                delta = -small
-            elif key in (readchar.key.UP, "k"):
-                delta = large
-            elif key in (readchar.key.DOWN, "j"):
-                delta = -large
+            if key == "w":
+                _move_axis(0, +1)
+            elif key == "s":
+                _move_axis(0, -1)
+            elif key == "d":
+                _move_axis(1, +1)
+            elif key == "a":
+                _move_axis(1, -1)
+            elif key == readchar.key.UP:
+                _move_axis(2, +1)
+            elif key == readchar.key.DOWN:
+                _move_axis(2, -1)
+            elif key in ("-", "_"):
+                step = max(1, step // 2)
+            elif key in ("+", "="):
+                step = step * 2
             elif key == "p":
-                pos = api.get_position(args.id)
-                print(f"Position: {pos}")
-                continue
+                _refresh()
             elif key in ("q", readchar.key.CTRL_C):
                 break
-
-            if delta is not None:
-                new_pos = max(pos_min, min(pos_max, pos + delta))
-                api.set_position(args.id, new_pos)
-                pos = api.get_position(args.id)
-                print(f"\rPosition: {pos}  ", end="", flush=True)
+            else:
+                continue
+            print(_status(), end="", flush=True)
     except KeyboardInterrupt:
         pass
     finally:
@@ -173,47 +215,71 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
 
 def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
     from one_axis_stage.controller import StageController
-    from one_axis_stage.interface import MoveInterface
 
     controller = StageController.from_config(args.config)
-    move = MoveInterface(
-        controller,
-        small_increment=args.small,
-        large_increment=args.large,
-    )
+    step = args.small
 
     axis_names = list(controller.axes.keys())
-    print(f"Jogging axes: {axis_names}")
-    print("Keys per axis: <axis>p/m = small +/-   <axis>P/M = large +/-   q = quit")
-    print("Example: 'xp' moves x forward one small step")
+    # Map first 3 axes to W/S (y), A/D (x), Up/Down (z) in YAML order.
+    _KEY_LABELS = ["w/s (y)", "a/d (x)", "up/down (z)"]
+    axis_key_hint = "  ".join(
+        f"{axis_names[i]}: {_KEY_LABELS[i]}" for i in range(min(len(axis_names), 3))
+    )
+    print(f"Jogging: {axis_key_hint}")
+    print("  w/s y+/-   a/d x+/-   up/down z+/-   -/+ speed   p refresh   q quit")
 
-    # Build dispatch: lowercase p/m = small, uppercase P/M = large
-    dispatch: dict[str, Any] = {}
-    for name in axis_names:
-        dispatch[f"{name}p"] = getattr(move, f"{name}p")
-        dispatch[f"{name}m"] = getattr(move, f"{name}m")
-        dispatch[f"{name}P"] = getattr(move, f"{name}pp")
-        dispatch[f"{name}M"] = getattr(move, f"{name}mm")
+    def _move_axis(axis_idx: int, direction: int) -> None:
+        if axis_idx >= len(axis_names):
+            return
+        ax = controller.axes[axis_names[axis_idx]]
+        new_pos = max(
+            ax.position_min, min(ax.position_max, ax.position_raw + direction * step)
+        )
+        with contextlib.suppress(AssertionError):
+            ax.set_position(new_pos)
 
-    buf = ""
+    def _refresh() -> None:
+        for name in axis_names:
+            controller.axes[name].get_info()
+
+    def _status() -> str:
+        parts = []
+        for name in axis_names:
+            ax = controller.axes[name]
+            bar = _pos_bar(ax.position_raw, ax.position_min, ax.position_max)
+            parts.append(
+                f"{name}={ax.position_raw:>6}  {ax.position_min} {bar} {ax.position_max}"
+            )
+        return "\r  " + "   |   ".join(parts) + f"   step={step}   "
+
+    print(_status(), end="", flush=True)
+
     try:
         while True:
             key = readchar.readkey()
-            if key in ("q", readchar.key.CTRL_C):
+            if key == "w":
+                _move_axis(0, +1)
+            elif key == "s":
+                _move_axis(0, -1)
+            elif key == "d":
+                _move_axis(1, +1)
+            elif key == "a":
+                _move_axis(1, -1)
+            elif key == readchar.key.UP:
+                _move_axis(2, +1)
+            elif key == readchar.key.DOWN:
+                _move_axis(2, -1)
+            elif key in ("-", "_"):
+                step = max(1, step // 2)
+            elif key in ("+", "="):
+                step = step * 2
+            elif key == "p":
+                _refresh()
+            elif key in ("q", readchar.key.CTRL_C):
                 break
-            buf += key
-            # Try longest match first, then single char
-            matched = None
-            for seq in sorted(dispatch, key=len, reverse=True):
-                if buf.endswith(seq):
-                    matched = seq
-                    break
-            if matched:
-                dispatch[matched]()
-                buf = ""
-                # Print current positions
-                positions = {n: controller.axes[n].position_raw for n in axis_names}
-                print(f"\r{positions}  ", end="", flush=True)
+            else:
+                continue
+            print(_status(), end="", flush=True)
     except KeyboardInterrupt:
         pass
     finally:
@@ -284,7 +350,12 @@ def _build_parser() -> argparse.ArgumentParser:
     # --- jog ---
     p_jog = sub.add_parser("jog", help="Interactive keyboard jog mode.")
     p_jog.add_argument("--port", help="Serial port. Required without --config.")
-    p_jog.add_argument("--id", type=int, help="Device ID. Required without --config.")
+    p_jog.add_argument(
+        "--id",
+        type=int,
+        nargs="+",
+        help="Device ID(s). Multiple IDs move together. Required without --config.",
+    )
     p_jog.add_argument("--baudrate", type=int, default=115200)
     p_jog.add_argument(
         "--config", help="Path to StageController YAML for multi-axis jog."
@@ -293,7 +364,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "--small", type=int, default=20, help="Small step size (default 20)."
     )
     p_jog.add_argument(
-        "--large", type=int, default=200, help="Large step size (default 200)."
+        "--large", type=int, default=40, help="Large step size (default 40)."
     )
     p_jog.add_argument(
         "--min", type=int, default=0, dest="min", help="Soft lower limit (default 0)."
@@ -301,9 +372,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p_jog.add_argument(
         "--max",
         type=int,
-        default=65535,
+        default=1023,
         dest="max",
-        help="Soft upper limit (default 65535).",
+        help="Soft upper limit (default 1023).",
     )
     p_jog.set_defaults(func=cmd_jog)
 

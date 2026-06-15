@@ -138,12 +138,20 @@ Two launch modes:
 
 | Key | Action |
 |---|---|
-| Right arrow / `l` | Small step forward |
-| Left arrow / `h` | Small step backward |
-| Up arrow / `k` | Large step forward |
-| Down arrow / `j` | Large step backward |
-| `p` | Print current position |
+| Right arrow / `l` | Step forward |
+| Left arrow / `h` | Step backward |
+| Up arrow / `k` | Big step forward |
+| Down arrow / `j` | Big step backward |
+| `[` | Halve step size |
+| `]` | Double step size |
+| `p` | Refresh position |
 | `q` / Ctrl-C | Quit |
+
+The status line updates after every move:
+
+```
+pos=   599  step=20   0 [--------|-----------------------] 65535
+```
 
 ### Keyboard map - config mode (multi-axis)
 
@@ -151,21 +159,29 @@ Keys are generated per axis name. With axes `x` and `y`:
 
 | Key | Action |
 |---|---|
-| `xp` | x small step forward |
-| `xm` | x small step backward |
-| `xP` | x large step forward |
-| `xM` | x large step backward |
+| `xp` | x step forward |
+| `xm` | x step backward |
+| `xP` | x big step forward |
+| `xM` | x big step backward |
+| `[` | Halve step size |
+| `]` | Double step size |
 | `q` / Ctrl-C | Quit |
+
+Per-axis bars are shown after each move:
+
+```
+x=   599  0 [-----|--------------------------] 65535   |   y=   300  0 [---|----------------------------] 65535   step=20
+```
 
 ### Flags
 
 | Flag | Default | Description |
 |---|---|---|
 | `--port` | required (bare) | Serial port. |
-| `--id` | required (bare) | Device ID. |
+| `--id` | required (bare) | One or more device IDs. All move together. |
 | `--baudrate` | `115200` | Connection baud rate. |
 | `--config` | — | Path to StageController YAML (multi-axis mode). |
 | `--small` | `20` | Small step size (raw units). |
-| `--large` | `200` | Large step size (raw units). |
+| `--large` | `40` | Large step size (raw units, 2x small). |
 | `--min` | `0` | Soft lower position limit (bare mode). |
-| `--max` | `65535` | Soft upper position limit (bare mode). |
+| `--max` | `1023` | Soft upper position limit (bare mode). |
