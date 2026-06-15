@@ -225,7 +225,7 @@ class StageController:
         new_position = {}
         for axis_name in self.axes:
             self.axes[axis_name].get_info()
-            axis_dict = self.axes[axis_name].__dict__()
+            axis_dict = self.axes[axis_name].to_dict()
             new_position[axis_name] = {"position_raw": axis_dict["position_raw"]}
 
         self.known_positions[position_name] = new_position
