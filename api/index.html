@@ -1109,7 +1109,7 @@ when the bus returns the 0xFFFF no-device sentinel for <code>model_number</code>
 
 
 <h3 id="one_axis_stage.api.StageAPI.scan_for_devices" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">scan_for_devices</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span> <span class="n">idle_timeout</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">scan_for_devices</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span> <span class="n">idle_timeout</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span></code>
 
 </h3>
 
@@ -1118,8 +1118,9 @@ when the bus returns the 0xFFFF no-device sentinel for <code>model_number</code>
 
         <p>Broadcast a scan and return a newline-separated list of discovered device IDs.</p>
 <p>Reads until there has been <code>idle_timeout</code> seconds of silence on the bus
-or <code>timeout</code> seconds total have elapsed. Increase <code>timeout</code> if the bus
-has many devices or runs at a slow baud rate.</p>
+or <code>timeout</code> seconds total have elapsed. The firmware scans multiple baud
+rates in sequence; idle_timeout must be long enough to span the gap between
+consecutive baud rate scans (default 3 s).</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -1162,7 +1163,7 @@ has many devices or runs at a slow baud rate.</p>
               </div>
             </td>
             <td>
-                  <code>1.0</code>
+                  <code>3.0</code>
             </td>
           </tr>
       </tbody>

@@ -697,23 +697,31 @@ stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 <tbody>
 <tr>
 <td>Right arrow / <code>l</code></td>
-<td>Small step forward</td>
+<td>Step forward</td>
 </tr>
 <tr>
 <td>Left arrow / <code>h</code></td>
-<td>Small step backward</td>
+<td>Step backward</td>
 </tr>
 <tr>
 <td>Up arrow / <code>k</code></td>
-<td>Large step forward</td>
+<td>Big step forward</td>
 </tr>
 <tr>
 <td>Down arrow / <code>j</code></td>
-<td>Large step backward</td>
+<td>Big step backward</td>
+</tr>
+<tr>
+<td><code>[</code></td>
+<td>Halve step size</td>
+</tr>
+<tr>
+<td><code>]</code></td>
+<td>Double step size</td>
 </tr>
 <tr>
 <td><code>p</code></td>
-<td>Print current position</td>
+<td>Refresh position</td>
 </tr>
 <tr>
 <td><code>q</code> / Ctrl-C</td>
@@ -721,6 +729,9 @@ stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 </tr>
 </tbody>
 </table>
+<p>The status line updates after every move:</p>
+<pre><code>pos=   599  step=20   0 [--------|-----------------------] 65535
+</code></pre>
 <h3 id="keyboard-map-config-mode-multi-axis">Keyboard map - config mode (multi-axis)</h3>
 <p>Keys are generated per axis name. With axes <code>x</code> and <code>y</code>:</p>
 <table>
@@ -733,19 +744,27 @@ stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 <tbody>
 <tr>
 <td><code>xp</code></td>
-<td>x small step forward</td>
+<td>x step forward</td>
 </tr>
 <tr>
 <td><code>xm</code></td>
-<td>x small step backward</td>
+<td>x step backward</td>
 </tr>
 <tr>
 <td><code>xP</code></td>
-<td>x large step forward</td>
+<td>x big step forward</td>
 </tr>
 <tr>
 <td><code>xM</code></td>
-<td>x large step backward</td>
+<td>x big step backward</td>
+</tr>
+<tr>
+<td><code>[</code></td>
+<td>Halve step size</td>
+</tr>
+<tr>
+<td><code>]</code></td>
+<td>Double step size</td>
 </tr>
 <tr>
 <td><code>q</code> / Ctrl-C</td>
@@ -753,6 +772,9 @@ stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 </tr>
 </tbody>
 </table>
+<p>Per-axis bars are shown after each move:</p>
+<pre><code>x=   599  0 [-----|--------------------------] 65535   |   y=   300  0 [---|----------------------------] 65535   step=20
+</code></pre>
 <h3 id="flags">Flags</h3>
 <table>
 <thead>
@@ -771,7 +793,7 @@ stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 <tr>
 <td><code>--id</code></td>
 <td>required (bare)</td>
-<td>Device ID.</td>
+<td>One or more device IDs. All move together.</td>
 </tr>
 <tr>
 <td><code>--baudrate</code></td>
@@ -790,8 +812,8 @@ stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 </tr>
 <tr>
 <td><code>--large</code></td>
-<td><code>200</code></td>
-<td>Large step size (raw units).</td>
+<td><code>40</code></td>
+<td>Large step size (raw units, 2x small).</td>
 </tr>
 <tr>
 <td><code>--min</code></td>
@@ -800,7 +822,7 @@ stage jog --config CONFIG_YAML [--small STEP] [--large STEP]
 </tr>
 <tr>
 <td><code>--max</code></td>
-<td><code>65535</code></td>
+<td><code>1023</code></td>
 <td>Soft upper position limit (bare mode).</td>
 </tr>
 </tbody>
