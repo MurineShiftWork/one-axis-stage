@@ -28,9 +28,12 @@ def _api_mock(initial_positions: dict[int, int]) -> MagicMock:
 
 def _args(ids, small=20, pos_min=0, pos_max=1023, port="/dev/ttyUSB0"):
     return argparse.Namespace(
-        id=ids, small=small,
-        min=pos_min, max=pos_max,
-        port=port, baudrate=115200,
+        id=ids,
+        small=small,
+        min=pos_min,
+        max=pos_max,
+        port=port,
+        baudrate=115200,
     )
 
 

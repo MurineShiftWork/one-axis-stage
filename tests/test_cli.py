@@ -109,7 +109,9 @@ def test_jog_defaults():
 
 def test_jog_multi_id():
     parser = _build_parser()
-    args = parser.parse_args(["jog", "--port", "/dev/ttyUSB0", "--id", "21", "22", "23"])
+    args = parser.parse_args(
+        ["jog", "--port", "/dev/ttyUSB0", "--id", "21", "22", "23"]
+    )
     assert args.id == [21, 22, 23]
 
 
