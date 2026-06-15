@@ -121,8 +121,8 @@ def test_step_decrease_and_increase(capsys):
         _jog_bare_mode(_args([21]), rc)
 
     calls = api.set_position.call_args_list
-    assert calls[0] == call(21, 510)   # +10 after halve
-    assert calls[1] == call(21, 530)   # +20 after double (pos now 510)
+    assert calls[0] == call(21, 510)  # +10 after halve
+    assert calls[1] == call(21, 530)  # +20 after double (pos now 510)
 
 
 def test_refresh_calls_get_info(capsys):
