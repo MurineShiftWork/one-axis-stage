@@ -38,12 +38,13 @@ class StageAPI(StageSerialConnection):
         self.stage_id = stage_id
         return stage_id
 
-    def scan_for_devices(self, timeout: float = 8.0, idle_timeout: float = 1.0) -> str:
+    def scan_for_devices(self, timeout: float = 8.0, idle_timeout: float = 3.0) -> str:
         """Broadcast a scan and return a newline-separated list of discovered device IDs.
 
         Reads until there has been ``idle_timeout`` seconds of silence on the bus
-        or ``timeout`` seconds total have elapsed. Increase ``timeout`` if the bus
-        has many devices or runs at a slow baud rate.
+        or ``timeout`` seconds total have elapsed. The firmware scans multiple baud
+        rates in sequence; idle_timeout must be long enough to span the gap between
+        consecutive baud rate scans (default 3 s).
 
         Args:
             timeout: Maximum total wait time in seconds.
