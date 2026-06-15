@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import sys
-from typing import Any
 
 
 def _make_api(port: str, baudrate: int = 115200):
@@ -139,11 +139,13 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
 
     ids: list[int] = args.id
     step = args.small
-    large = args.large
     pos_min = args.min
     pos_max = args.max
 
-    # Use get_info (JSON, confirmed working) for initial positions; track locally after.
+    # W/S → ids[0] (y), A/D → ids[1] (x), Up/Down → ids[2] (z)
+    _AXIS_LABELS = ["y", "x", "z"]
+
+    # Use get_info (JSON) for initial positions; track locally after.
     positions: dict[int, int] = {
         dev_id: api.get_info(dev_id)["position_raw"] for dev_id in ids
     }
@@ -151,50 +153,49 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
     def _clamp(p: int) -> int:
         return max(pos_min, min(pos_max, p))
 
-    def _status() -> str:
-        parts = []
-        for dev_id in ids:
-            bar = _pos_bar(positions[dev_id], pos_min, pos_max)
-            parts.append(
-                f"id={dev_id} pos={positions[dev_id]:>5}  {pos_min} {bar} {pos_max}"
-            )
-        sep = "   |   "
-        return "\r  " + sep.join(parts) + f"   step={step}   "
-
-    def _move(delta: int) -> None:
-        targets = [(dev_id, _clamp(positions[dev_id] + delta)) for dev_id in ids]
-        if len(targets) == 1:
-            api.set_position(targets[0][0], targets[0][1])
-        else:
-            api.set_position_multiple(targets)
-        for dev_id, new_pos in targets:
-            positions[dev_id] = new_pos
+    def _move_axis(axis_idx: int, direction: int) -> None:
+        if axis_idx >= len(ids):
+            return
+        dev_id = ids[axis_idx]
+        new_pos = _clamp(positions[dev_id] + direction * step)
+        api.set_position(dev_id, new_pos)
+        positions[dev_id] = new_pos
 
     def _refresh() -> None:
         for dev_id in ids:
-            info = api.get_info(dev_id)
-            positions[dev_id] = info["position_raw"]
+            positions[dev_id] = api.get_info(dev_id)["position_raw"]
+
+    def _status() -> str:
+        parts = []
+        for i, dev_id in enumerate(ids):
+            label = _AXIS_LABELS[i] if i < len(_AXIS_LABELS) else str(i)
+            bar = _pos_bar(positions[dev_id], pos_min, pos_max)
+            parts.append(f"{label}(id={dev_id})={positions[dev_id]:>5}  {pos_min} {bar} {pos_max}")
+        return "\r  " + "   |   ".join(parts) + f"   step={step}   "
 
     id_str = " ".join(str(i) for i in ids)
     print(f"Jogging id(s) {id_str} on {args.port}")
-    print("  right/l +step   left/h -step   up/k +big   down/j -big")
-    print("  [ half-step   ] double-step   p refresh from hardware   q quit")
+    print("  w/s y+/-   a/d x+/-   up/down z+/-   -/+ speed   p refresh   q quit")
     print(_status(), end="", flush=True)
 
     try:
         while True:
             key = readchar.readkey()
-            if key in (readchar.key.RIGHT, "l"):
-                _move(step)
-            elif key in (readchar.key.LEFT, "h"):
-                _move(-step)
-            elif key in (readchar.key.UP, "k"):
-                _move(large)
-            elif key in (readchar.key.DOWN, "j"):
-                _move(-large)
-            elif key == "[":
+            if key == "w":
+                _move_axis(0, +1)
+            elif key == "s":
+                _move_axis(0, -1)
+            elif key == "d":
+                _move_axis(1, +1)
+            elif key == "a":
+                _move_axis(1, -1)
+            elif key == readchar.key.UP:
+                _move_axis(2, +1)
+            elif key == readchar.key.DOWN:
+                _move_axis(2, -1)
+            elif key in ("-", "_"):
                 step = max(1, step // 2)
-            elif key == "]":
+            elif key in ("+", "="):
                 step = step * 2
             elif key == "p":
                 _refresh()
@@ -212,21 +213,31 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
 
 def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
     from one_axis_stage.controller import StageController
-    from one_axis_stage.interface import MoveInterface
 
     controller = StageController.from_config(args.config)
-    small = args.small
-    large = args.large
-
-    def _make_move() -> MoveInterface:
-        return MoveInterface(controller, small_increment=small, large_increment=large)
-
-    move = _make_move()
+    step = args.small
 
     axis_names = list(controller.axes.keys())
-    print(f"Jogging axes: {axis_names}")
-    print("  <axis>p/m +/-step   <axis>P/M +/-big   [ half-step   ] double-step   q quit")
-    print("  Example: 'xp' = x forward one step")
+    # Map first 3 axes to W/S (y), A/D (x), Up/Down (z) in YAML order.
+    _KEY_LABELS = ["w/s (y)", "a/d (x)", "up/down (z)"]
+    axis_key_hint = "  ".join(
+        f"{axis_names[i]}: {_KEY_LABELS[i]}"
+        for i in range(min(len(axis_names), 3))
+    )
+    print(f"Jogging: {axis_key_hint}")
+    print("  w/s y+/-   a/d x+/-   up/down z+/-   -/+ speed   p refresh   q quit")
+
+    def _move_axis(axis_idx: int, direction: int) -> None:
+        if axis_idx >= len(axis_names):
+            return
+        ax = controller.axes[axis_names[axis_idx]]
+        new_pos = max(ax.position_min, min(ax.position_max, ax.position_raw + direction * step))
+        with contextlib.suppress(AssertionError):
+            ax.set_position(new_pos)
+
+    def _refresh() -> None:
+        for name in axis_names:
+            controller.axes[name].get_info()
 
     def _status() -> str:
         parts = []
@@ -234,51 +245,36 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
             ax = controller.axes[name]
             bar = _pos_bar(ax.position_raw, ax.position_min, ax.position_max)
             parts.append(f"{name}={ax.position_raw:>6}  {ax.position_min} {bar} {ax.position_max}")
-        return "\r  " + "   |   ".join(parts) + f"   step={small}   "
+        return "\r  " + "   |   ".join(parts) + f"   step={step}   "
 
-    # Build dispatch: lowercase p/m = small, uppercase P/M = large
-    dispatch: dict[str, Any] = {}
-    for name in axis_names:
-        dispatch[f"{name}p"] = getattr(move, f"{name}p")
-        dispatch[f"{name}m"] = getattr(move, f"{name}m")
-        dispatch[f"{name}P"] = getattr(move, f"{name}pp")
-        dispatch[f"{name}M"] = getattr(move, f"{name}mm")
+    print(_status(), end="", flush=True)
 
-    buf = ""
     try:
         while True:
             key = readchar.readkey()
-            if key in ("q", readchar.key.CTRL_C):
+            if key == "w":
+                _move_axis(0, +1)
+            elif key == "s":
+                _move_axis(0, -1)
+            elif key == "d":
+                _move_axis(1, +1)
+            elif key == "a":
+                _move_axis(1, -1)
+            elif key == readchar.key.UP:
+                _move_axis(2, +1)
+            elif key == readchar.key.DOWN:
+                _move_axis(2, -1)
+            elif key in ("-", "_"):
+                step = max(1, step // 2)
+            elif key in ("+", "="):
+                step = step * 2
+            elif key == "p":
+                _refresh()
+            elif key in ("q", readchar.key.CTRL_C):
                 break
-            if key == "[":
-                small = max(1, small // 2)
-                move = _make_move()
-                dispatch.update({
-                    f"{n}{s}": getattr(move, f"{n}{s}")
-                    for n in axis_names for s in ("p", "m", "pp", "mm")
-                })
-                print(_status(), end="", flush=True)
+            else:
                 continue
-            if key == "]":
-                small = small * 2
-                move = _make_move()
-                dispatch.update({
-                    f"{n}{s}": getattr(move, f"{n}{s}")
-                    for n in axis_names for s in ("p", "m", "pp", "mm")
-                })
-                print(_status(), end="", flush=True)
-                continue
-            buf += key
-            # Try longest match first, then single char
-            matched = None
-            for seq in sorted(dispatch, key=len, reverse=True):
-                if buf.endswith(seq):
-                    matched = seq
-                    break
-            if matched:
-                dispatch[matched]()
-                buf = ""
-                print(_status(), end="", flush=True)
+            print(_status(), end="", flush=True)
     except KeyboardInterrupt:
         pass
     finally:
