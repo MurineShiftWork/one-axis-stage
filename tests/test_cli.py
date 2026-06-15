@@ -99,11 +99,18 @@ def test_set_baudrate_parses_args():
 def test_jog_defaults():
     parser = _build_parser()
     args = parser.parse_args(["jog", "--port", "/dev/ttyUSB0", "--id", "21"])
+    assert args.id == [21]
     assert args.small == 20
     assert args.large == 40
     assert args.min == 0
-    assert args.max == 65535
+    assert args.max == 1023
     assert args.config is None
+
+
+def test_jog_multi_id():
+    parser = _build_parser()
+    args = parser.parse_args(["jog", "--port", "/dev/ttyUSB0", "--id", "21", "22", "23"])
+    assert args.id == [21, 22, 23]
 
 
 def test_jog_custom_steps():

@@ -178,10 +178,10 @@ x=   599  0 [-----|--------------------------] 65535   |   y=   300  0 [---|----
 | Flag | Default | Description |
 |---|---|---|
 | `--port` | required (bare) | Serial port. |
-| `--id` | required (bare) | Device ID. |
+| `--id` | required (bare) | One or more device IDs. All move together. |
 | `--baudrate` | `115200` | Connection baud rate. |
 | `--config` | — | Path to StageController YAML (multi-axis mode). |
 | `--small` | `20` | Small step size (raw units). |
-| `--large` | `40` | Large step size (raw units). |
+| `--large` | `40` | Large step size (raw units, 2x small). |
 | `--min` | `0` | Soft lower position limit (bare mode). |
-| `--max` | `65535` | Soft upper position limit (bare mode). |
+| `--max` | `1023` | Soft upper position limit (bare mode). |

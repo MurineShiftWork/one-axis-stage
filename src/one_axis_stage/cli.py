@@ -137,53 +137,72 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
     api = StageAPI(serial_port=args.port, baudrate=args.baudrate)
     api.connect()
 
-    pos = api.get_position(args.id)
+    ids: list[int] = args.id
     step = args.small
     large = args.large
     pos_min = args.min
     pos_max = args.max
 
-    def _status() -> str:
-        bar = _pos_bar(pos, pos_min, pos_max)
-        return f"\r  pos={pos:>6}  step={step:<5}  {pos_min} {bar} {pos_max}   "
+    # Use get_info (JSON, confirmed working) for initial positions; track locally after.
+    positions: dict[int, int] = {
+        dev_id: api.get_info(dev_id)["position_raw"] for dev_id in ids
+    }
 
-    print(f"Jogging device {args.id} on {args.port}")
+    def _clamp(p: int) -> int:
+        return max(pos_min, min(pos_max, p))
+
+    def _status() -> str:
+        parts = []
+        for dev_id in ids:
+            bar = _pos_bar(positions[dev_id], pos_min, pos_max)
+            parts.append(
+                f"id={dev_id} pos={positions[dev_id]:>5}  {pos_min} {bar} {pos_max}"
+            )
+        sep = "   |   "
+        return "\r  " + sep.join(parts) + f"   step={step}   "
+
+    def _move(delta: int) -> None:
+        targets = [(dev_id, _clamp(positions[dev_id] + delta)) for dev_id in ids]
+        if len(targets) == 1:
+            api.set_position(targets[0][0], targets[0][1])
+        else:
+            api.set_position_multiple(targets)
+        for dev_id, new_pos in targets:
+            positions[dev_id] = new_pos
+
+    def _refresh() -> None:
+        for dev_id in ids:
+            info = api.get_info(dev_id)
+            positions[dev_id] = info["position_raw"]
+
+    id_str = " ".join(str(i) for i in ids)
+    print(f"Jogging id(s) {id_str} on {args.port}")
     print("  right/l +step   left/h -step   up/k +big   down/j -big")
-    print("  [ half-step   ] double-step   p refresh   q quit")
+    print("  [ half-step   ] double-step   p refresh from hardware   q quit")
     print(_status(), end="", flush=True)
 
     try:
         while True:
             key = readchar.readkey()
-            delta = None
             if key in (readchar.key.RIGHT, "l"):
-                delta = step
+                _move(step)
             elif key in (readchar.key.LEFT, "h"):
-                delta = -step
+                _move(-step)
             elif key in (readchar.key.UP, "k"):
-                delta = large
+                _move(large)
             elif key in (readchar.key.DOWN, "j"):
-                delta = -large
+                _move(-large)
             elif key == "[":
                 step = max(1, step // 2)
-                print(_status(), end="", flush=True)
-                continue
             elif key == "]":
                 step = step * 2
-                print(_status(), end="", flush=True)
-                continue
             elif key == "p":
-                pos = api.get_position(args.id)
-                print(_status(), end="", flush=True)
-                continue
+                _refresh()
             elif key in ("q", readchar.key.CTRL_C):
                 break
-
-            if delta is not None:
-                new_pos = max(pos_min, min(pos_max, pos + delta))
-                api.set_position(args.id, new_pos)
-                pos = api.get_position(args.id)
-                print(_status(), end="", flush=True)
+            else:
+                continue
+            print(_status(), end="", flush=True)
     except KeyboardInterrupt:
         pass
     finally:
@@ -330,7 +349,12 @@ def _build_parser() -> argparse.ArgumentParser:
     # --- jog ---
     p_jog = sub.add_parser("jog", help="Interactive keyboard jog mode.")
     p_jog.add_argument("--port", help="Serial port. Required without --config.")
-    p_jog.add_argument("--id", type=int, help="Device ID. Required without --config.")
+    p_jog.add_argument(
+        "--id",
+        type=int,
+        nargs="+",
+        help="Device ID(s). Multiple IDs move together. Required without --config.",
+    )
     p_jog.add_argument("--baudrate", type=int, default=115200)
     p_jog.add_argument(
         "--config", help="Path to StageController YAML for multi-axis jog."
@@ -347,9 +371,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p_jog.add_argument(
         "--max",
         type=int,
-        default=65535,
+        default=1023,
         dest="max",
-        help="Soft upper limit (default 65535).",
+        help="Soft upper limit (default 1023).",
     )
     p_jog.set_defaults(func=cmd_jog)
 
