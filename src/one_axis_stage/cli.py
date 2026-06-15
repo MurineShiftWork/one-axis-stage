@@ -170,7 +170,9 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
         for i, dev_id in enumerate(ids):
             label = _AXIS_LABELS[i] if i < len(_AXIS_LABELS) else str(i)
             bar = _pos_bar(positions[dev_id], pos_min, pos_max)
-            parts.append(f"{label}(id={dev_id})={positions[dev_id]:>5}  {pos_min} {bar} {pos_max}")
+            parts.append(
+                f"{label}(id={dev_id})={positions[dev_id]:>5}  {pos_min} {bar} {pos_max}"
+            )
         return "\r  " + "   |   ".join(parts) + f"   step={step}   "
 
     id_str = " ".join(str(i) for i in ids)
@@ -221,8 +223,7 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
     # Map first 3 axes to W/S (y), A/D (x), Up/Down (z) in YAML order.
     _KEY_LABELS = ["w/s (y)", "a/d (x)", "up/down (z)"]
     axis_key_hint = "  ".join(
-        f"{axis_names[i]}: {_KEY_LABELS[i]}"
-        for i in range(min(len(axis_names), 3))
+        f"{axis_names[i]}: {_KEY_LABELS[i]}" for i in range(min(len(axis_names), 3))
     )
     print(f"Jogging: {axis_key_hint}")
     print("  w/s y+/-   a/d x+/-   up/down z+/-   -/+ speed   p refresh   q quit")
@@ -231,7 +232,9 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
         if axis_idx >= len(axis_names):
             return
         ax = controller.axes[axis_names[axis_idx]]
-        new_pos = max(ax.position_min, min(ax.position_max, ax.position_raw + direction * step))
+        new_pos = max(
+            ax.position_min, min(ax.position_max, ax.position_raw + direction * step)
+        )
         with contextlib.suppress(AssertionError):
             ax.set_position(new_pos)
 
@@ -244,7 +247,9 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
         for name in axis_names:
             ax = controller.axes[name]
             bar = _pos_bar(ax.position_raw, ax.position_min, ax.position_max)
-            parts.append(f"{name}={ax.position_raw:>6}  {ax.position_min} {bar} {ax.position_max}")
+            parts.append(
+                f"{name}={ax.position_raw:>6}  {ax.position_min} {bar} {ax.position_max}"
+            )
         return "\r  " + "   |   ".join(parts) + f"   step={step}   "
 
     print(_status(), end="", flush=True)
