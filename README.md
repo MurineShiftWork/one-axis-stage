@@ -1,5 +1,7 @@
 # one-axis-stage
 
+[![PyPI](https://img.shields.io/pypi/v/one-axis-stage.svg)](https://pypi.org/project/one-axis-stage)
+
 Hardware design and Python software for modular, low-cost one-axis stages using
 Dynamixel XL-320 servo motors.
 
