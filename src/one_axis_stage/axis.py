@@ -122,8 +122,7 @@ class StageAxis:
         """
         assert op_mode is not None, f"Invalid operating mode: {op_mode}"
 
-        if isinstance(op_mode, str):
-            self._op_mode_str_to_int(op_mode=op_mode)  # type: ignore[attr-defined]
-
+        # api.set_operating_mode() converts a str mode name to its int code
+        # internally; do not pre-convert here (StageAxis has no such helper).
         self.api.set_operating_mode(device_id=self.id, op_mode=op_mode)
         logging.debug(f"Set operating mode: {op_mode}")
