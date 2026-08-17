@@ -104,6 +104,92 @@ def cmd_set_baudrate(args: argparse.Namespace) -> None:
 # jog
 
 
+def _parse_key_bindings(
+    keys_str: str | None, num_axes: int, readchar
+) -> dict[int, tuple[str, str]]:
+    """Map each axis index to its ``(plus_key, minus_key)`` for interactive jog.
+
+    ``keys_str`` is a comma-separated list of per-axis key pairs in axis order, e.g.
+    ``"ws,ad,up/down,uj"``. A pair is two keys separated by ``/`` or whitespace, or a
+    two-letter shorthand (``"ws"`` == ``"w/s"``); ``up``/``down``/``left``/``right``
+    resolve to the terminal arrow codes. When ``keys_str`` is ``None`` the historical
+    default is used (``w``/``s``, ``a``/``d``, Up/Down) for the first three axes. Pairs
+    beyond ``num_axes`` are ignored.
+    """
+    if keys_str is None:
+        # Historical directions: w/Up/d are the + keys, s/Down/a are the - keys.
+        default = [("w", "s"), ("d", "a"), (readchar.key.UP, readchar.key.DOWN)]
+        return {i: default[i] for i in range(min(num_axes, len(default)))}
+
+    arrows = {
+        "up": readchar.key.UP,
+        "down": readchar.key.DOWN,
+        "left": readchar.key.LEFT,
+        "right": readchar.key.RIGHT,
+    }
+
+    def _resolve(tok: str) -> str:
+        tok = tok.strip().lower()
+        return arrows.get(tok, tok)
+
+    bindings: dict[int, tuple[str, str]] = {}
+    for axis_idx, pair in enumerate(p.strip() for p in keys_str.split(",")):
+        if axis_idx >= num_axes:
+            break
+        if "/" in pair:
+            parts = pair.split("/")
+        elif pair.split() != [pair]:
+            parts = pair.split()
+        elif len(pair) == 2 and pair.lower() not in arrows:
+            parts = [pair[0], pair[1]]  # two-letter shorthand, e.g. "ws"
+        else:
+            parts = [pair]
+        if len(parts) != 2:
+            raise ValueError(
+                f"--keys axis {axis_idx}: expected a key pair like 'ws' or 'up/down', "
+                f"got {pair!r}"
+            )
+        bindings[axis_idx] = (_resolve(parts[0]), _resolve(parts[1]))
+    return bindings
+
+
+def _key_display(key: str, readchar) -> str:
+    """Human label for a jog key (arrow codes become up/down/left/right)."""
+    names = {
+        readchar.key.UP: "up",
+        readchar.key.DOWN: "down",
+        readchar.key.LEFT: "left",
+        readchar.key.RIGHT: "right",
+    }
+    return names.get(key, key)
+
+
+def _jog_help_line(
+    key_bindings: dict[int, tuple[str, str]], labels: list[str], readchar
+) -> str:
+    """Render the per-axis key hint plus the global-controls line for jog."""
+    parts = []
+    for i in sorted(key_bindings):
+        plus, minus = key_bindings[i]
+        label = labels[i] if i < len(labels) else str(i)
+        parts.append(
+            f"{_key_display(plus, readchar)}/{_key_display(minus, readchar)} {label}+/-"
+        )
+    return "  " + "   ".join(parts) + "   -/+ speed   p refresh   q quit"
+
+
+def _jog_apply_key(key: str, key_bindings: dict[int, tuple[str, str]], move) -> bool:
+    """If ``key`` is bound to an axis, call ``move(axis_idx, direction)`` and return True."""
+    for axis_idx, (plus_key, minus_key) in key_bindings.items():
+        if key == plus_key:
+            move(axis_idx, +1)
+            return True
+        if key == minus_key:
+            move(axis_idx, -1)
+            return True
+    return False
+
+
 def cmd_jog(args: argparse.Namespace) -> None:
     """Interactive keyboard jog mode."""
     try:
@@ -175,36 +261,26 @@ def _jog_bare_mode(args: argparse.Namespace, readchar) -> None:
             )
         return "\r  " + "   |   ".join(parts) + f"   step={step}   "
 
+    key_bindings = _parse_key_bindings(getattr(args, "keys", None), len(ids), readchar)
     id_str = " ".join(str(i) for i in ids)
     print(f"Jogging id(s) {id_str} on {args.port}")
-    print("  w/s y+/-   a/d x+/-   up/down z+/-   -/+ speed   p refresh   q quit")
+    print(_jog_help_line(key_bindings, _AXIS_LABELS, readchar))
     print(_status(), end="", flush=True)
 
     try:
         while True:
             key = readchar.readkey()
-            if key == "w":
-                _move_axis(0, +1)
-            elif key == "s":
-                _move_axis(0, -1)
-            elif key == "d":
-                _move_axis(1, +1)
-            elif key == "a":
-                _move_axis(1, -1)
-            elif key == readchar.key.UP:
-                _move_axis(2, +1)
-            elif key == readchar.key.DOWN:
-                _move_axis(2, -1)
-            elif key in ("-", "_"):
-                step = max(1, step // 2)
-            elif key in ("+", "="):
-                step = step * 2
-            elif key == "p":
-                _refresh()
-            elif key in ("q", readchar.key.CTRL_C):
-                break
-            else:
-                continue
+            if not _jog_apply_key(key, key_bindings, _move_axis):
+                if key in ("-", "_"):
+                    step = max(1, step // 2)
+                elif key in ("+", "="):
+                    step = step * 2
+                elif key == "p":
+                    _refresh()
+                elif key in ("q", readchar.key.CTRL_C):
+                    break
+                else:
+                    continue
             print(_status(), end="", flush=True)
     except KeyboardInterrupt:
         pass
@@ -220,13 +296,11 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
     step = args.small
 
     axis_names = list(controller.axes.keys())
-    # Map first 3 axes to W/S (y), A/D (x), Up/Down (z) in YAML order.
-    _KEY_LABELS = ["w/s (y)", "a/d (x)", "up/down (z)"]
-    axis_key_hint = "  ".join(
-        f"{axis_names[i]}: {_KEY_LABELS[i]}" for i in range(min(len(axis_names), 3))
+    key_bindings = _parse_key_bindings(
+        getattr(args, "keys", None), len(axis_names), readchar
     )
-    print(f"Jogging: {axis_key_hint}")
-    print("  w/s y+/-   a/d x+/-   up/down z+/-   -/+ speed   p refresh   q quit")
+    print(f"Jogging axes: {', '.join(axis_names)}")
+    print(_jog_help_line(key_bindings, axis_names, readchar))
 
     def _move_axis(axis_idx: int, direction: int) -> None:
         if axis_idx >= len(axis_names):
@@ -257,28 +331,17 @@ def _jog_config_mode(args: argparse.Namespace, readchar) -> None:
     try:
         while True:
             key = readchar.readkey()
-            if key == "w":
-                _move_axis(0, +1)
-            elif key == "s":
-                _move_axis(0, -1)
-            elif key == "d":
-                _move_axis(1, +1)
-            elif key == "a":
-                _move_axis(1, -1)
-            elif key == readchar.key.UP:
-                _move_axis(2, +1)
-            elif key == readchar.key.DOWN:
-                _move_axis(2, -1)
-            elif key in ("-", "_"):
-                step = max(1, step // 2)
-            elif key in ("+", "="):
-                step = step * 2
-            elif key == "p":
-                _refresh()
-            elif key in ("q", readchar.key.CTRL_C):
-                break
-            else:
-                continue
+            if not _jog_apply_key(key, key_bindings, _move_axis):
+                if key in ("-", "_"):
+                    step = max(1, step // 2)
+                elif key in ("+", "="):
+                    step = step * 2
+                elif key == "p":
+                    _refresh()
+                elif key in ("q", readchar.key.CTRL_C):
+                    break
+                else:
+                    continue
             print(_status(), end="", flush=True)
     except KeyboardInterrupt:
         pass
@@ -375,6 +438,15 @@ def _build_parser() -> argparse.ArgumentParser:
         default=1023,
         dest="max",
         help="Soft upper limit (default 1023).",
+    )
+    p_jog.add_argument(
+        "--keys",
+        default=None,
+        help=(
+            "Per-axis key pairs, comma-separated in axis order, e.g. 'ws,ad,up/down,uj'. "
+            "Each pair is plus/minus (two-letter shorthand like 'ws', or 'up/down' for "
+            "arrows). Default: w/s, a/d, Up/Down for the first three axes."
+        ),
     )
     p_jog.set_defaults(func=cmd_jog)
 
